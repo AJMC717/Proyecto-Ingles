@@ -48,7 +48,21 @@
        ============================================================ -->
   <div id="pantallaMenu">
     <h1>🗂️ How do you want to practice today?</h1>
+
+    <div class="selector-dificultad" style="display: flex; justify-content: center; gap: 12px; margin: 15px 0 25px 0; width: 100%;">
+      <button class="btn-dif" onclick="seleccionarDificultad('facil', this)" style="padding: 10px 20px; border-radius: 12px; border: 2px solid #E5E5E5; background: white; cursor: pointer; font-weight: bold; font-size: 15px;">🟢 Fácil</button>
+      <button class="btn-dif" onclick="seleccionarDificultad('medio', this)" style="padding: 10px 20px; border-radius: 12px; border: 2px solid #E5E5E5; background: white; cursor: pointer; font-weight: bold; font-size: 15px;">🟡 Medio</button>
+      <button class="btn-dif" onclick="seleccionarDificultad('dificil', this)" style="padding: 10px 20px; border-radius: 12px; border: 2px solid #E5E5E5; background: white; cursor: pointer; font-weight: bold; font-size: 15px;">🔴 Difícil</button>
+    </div>
+
     <div class="menu-modos">
+
+      <button class="tarjeta-modo" data-modo="preguntas">
+        <span class="emoji-modo">❓</span>
+        <div class="titulo-modo">Questions & Answers</div>
+        <div class="desc-modo">Read the question and choose the correct answer.</div>
+      </button>
+
       <button class="tarjeta-modo" data-modo="completo">
         <span class="emoji-modo">🌟</span>
         <div class="titulo-modo">Write, Listen and Speak</div>

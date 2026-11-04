@@ -15,7 +15,25 @@
   let respondiendo = false;
   let intentos = 0;            // fallos en la pregunta actual (máximo 3 para la ayuda)
   let pronunciacionOk = false; // modo completo, paso 3: ¿ya lo dijo bien?
+  let dificultadActual = "facil";
 
+function seleccionarDificultad(nivel, btn) {
+  dificultadActual = nivel;
+
+  // Quita el resaltado de todos los botones
+  document.querySelectorAll('.btn-dif').forEach(b => {
+    b.style.background = 'white';
+    b.style.borderColor = '#E5E5E5';
+    b.style.transform = 'scale(1)';
+  });
+
+  // Resalta el botón seleccionado
+  if (btn) {
+    btn.style.background = '#E8F5E9';
+    btn.style.borderColor = '#58CC02';
+    btn.style.transform = 'scale(1.05)';
+  }
+}
   const inputRespuesta = document.getElementById("respuestaInput");
   const mensaje = document.getElementById("mensaje");
 
@@ -76,49 +94,30 @@
 
   // Modo "oraciones": 12 preguntas al azar, armamos fichas con distractores
   function generarPreguntasDeOraciones() {
-    const tiempos = ["pasado", "presente", "futuro"];
-    const lista = [];
-    const verbosDeLaRonda = mezclar(verbos.map((_, idx) => idx)).slice(0, 12);
-    for (let i = 0; i < 12; i++) {
-      const verboIdx = verbosDeLaRonda[i];
-      const pronombreIdx = Math.floor(Math.random() * pronombres.length);
-      const tiempo = elegirAlAzar(tiempos);
-      const verbo = verbos[verboIdx];
-      const pronombre = pronombrePorVerbo[verbo.nombre];
-
-      let tokensCorrectos;
-      if (tiempo === "pasado") {
-        tokensCorrectos = [pronombre, verbo.past];
-      } else if (tiempo === "futuro") {
-        tokensCorrectos = [pronombre, "will", verbo.pres];
-      } else {
-       tokensCorrectos = [pronombre, ["He", "She", "It"].includes(pronombre) ? verbo.pres3 : verbo.pres];
-      }
-
-      // Armamos una bolsa de palabras distractoras que no se repitan
-      // con las que ya son parte de la oración correcta
-      const posiblesDistractores = [
-        ...pronombresUnicos.filter(p => p !== pronombre),
-        verbo.past, verbo.pres, verbo.pres3, "will",
-      ].filter(palabra => !tokensCorrectos.includes(palabra));
-
-      const distractores = mezclar(posiblesDistractores).slice(0, 3);
-      const fichas = mezclar([...tokensCorrectos, ...distractores]);
-
-      lista.push({
-        verboIdx,
-        img: verbo.img,
-        tokensCorrectos,
-        fichas,
-        etiquetaTiempo: { pasado: "Past", presente: "Present", futuro: "Future" }[tiempo],
-      });
-    }
-    return lista;
-  }
+  const lista = datosOraciones[dificultadActual] || datosOraciones.facil;
+  return mezclar(lista).map((item, idx) => ({
+    verboIdx: idx,
+    img: verbos[idx % verbos.length].img,
+    oracionCorrecta: item.texto,
+    traduccion: item.es,
+    fichas: mezclar(item.texto.split(" "))
+  }));
+}
 
   /* ============================================================
      PASO 4: arrancar un modo de juego
      ============================================================ */
+  function generarPreguntasDePreguntas() {
+  const lista = datosPreguntas[dificultadActual] || datosPreguntas.facil;
+  return mezclar(lista).map((item, idx) => ({
+    verboIdx: idx,
+    img: verbos[idx % verbos.length].img,
+    preguntaTexto: item.pregunta,
+    opciones: item.opciones,
+    respuestaCorrecta: item.opciones[item.correcta]
+  }));
+}
+
   function iniciarModo(modo) {
     const user = localStorage.getItem('userActual');
     const estadoGuardado = JSON.parse(localStorage.getItem('estado_juego_' + user));
@@ -128,10 +127,10 @@
       mostrarConfirm(
         '️ Partida guardada encontrada',
         `Tienes una partida guardada en este modo:<br><br>
-         📍 Pregunta: <b>${estadoGuardado.preguntaActual + 1}</b><br>
-         ⭐ Puntos: <b>${estadoGuardado.puntos}</b><br>
-         🔥 Racha: <b>${estadoGuardado.racha}</b><br><br>
-         ¿Deseas continuar donde lo dejaste?`,
+          📍 Pregunta: <b>${estadoGuardado.preguntaActual + 1}</b><br>
+          ⭐ Puntos: <b>${estadoGuardado.puntos}</b><br>
+          🔥 Racha: <b>${estadoGuardado.racha}</b><br><br>
+          ¿Deseas continuar donde lo dejaste?`,
         () => {
           // Acción si acepta (continuar)
           modoActual = estadoGuardado.modo;
@@ -169,6 +168,8 @@
       preguntas = generarPreguntasDeConjugacion();
     } else if (modo === "oraciones") {
       preguntas = generarPreguntasDeOraciones();
+    } else if (modo === "preguntas"){
+      preguntas = generarPreguntasDePreguntas();
     }
 
     mostrarInterfazJuego();
@@ -187,9 +188,9 @@
     document.getElementById("zonaHablar").classList.toggle("oculto", modoActual !== "hablar");
     document.querySelector(".carrusel").classList.toggle("solo-audio", modoActual === "escuchar");
     document.getElementById("zonaPaso").classList.add("oculto");
-    document.getElementById("zonaOpciones").classList.toggle("oculto", modoActual !== "elegir");
+    document.getElementById("zonaOpciones").classList.toggle("oculto", modoActual !== "elegir" && modoActual !== "preguntas");
     document.getElementById("zonaOraciones").classList.toggle("oculto", modoActual !== "oraciones");
-    document.getElementById("consigna").classList.toggle("oculto", modoActual !== "conjugar" && modoActual !== "oraciones");
+    document.getElementById("consigna").classList.toggle("oculto", modoActual !== "conjugar" && modoActual !== "oraciones" && modoActual !== "preguntas");
   }
      
   
@@ -241,7 +242,7 @@
     } else if (modoActual === "elegir") {
       prepararZonaOpciones(q);
     } else if (modoActual === "oraciones") {
-      document.getElementById("consigna").textContent = q.etiquetaTiempo;
+      document.getElementById("consigna").textContent = q.traduccion;
       prepararZonaOraciones(q);
     } else if (modoActual === "escuchar") {
       document.querySelector(".carrusel").classList.remove("revelada");
@@ -253,6 +254,9 @@
       prepararZonaHablar();
     } else if (modoActual === "completo") {
       irAPaso(1);
+    } else if (modoActual === "preguntas") {
+      document.getElementById("consigna").textContent = q.preguntaTexto;
+      prepararZonaOpciones(q);
     }
   }
 
@@ -396,18 +400,23 @@
     respondiendo = true;
 
     const q = preguntas[preguntaActual];
-    const armada = fichasElegidas.map(item => item.palabra);
-    const esCorrecto = armada.length === q.tokensCorrectos.length &&
-      armada.every((palabra, idx) => palabra === q.tokensCorrectos[idx]);
+    const armada = fichasElegidas.map(item => item.palabra).join(" ");
+    const esCorrecto = (armada === q.oracionCorrecta);
 
     // Si se equivoca, conserva las fichas puestas y puede corregir
     if (!esCorrecto) {
-      manejarFallo(q.tokensCorrectos.join(" "));
+      manejarFallo(q.oracionCorrecta);
       respondiendo = false;
       return;
     }
+    
+    if ('speechSynthesis' in window) {
+    const locucion = new SpeechSynthesisUtterance(q.oracionCorrecta);
+    locucion.lang = 'en-US';
+    window.speechSynthesis.speak(locucion);
+    }
 
-    marcarResultado(esCorrecto, q.tokensCorrectos.join(" "));
+    marcarResultado(esCorrecto, q.oracionCorrecta);
     avanzar();
   }
 
@@ -580,7 +589,7 @@
           flujo.getTracks().forEach(t => t.stop()); // solo era para pedir permiso
         } catch (e) { /* si lo bloquean, el juego abre igual y avisa al tocar el micrófono */ }
       }
-      iniciarModo(modo);
+      iniciarModoNormal(modo);
     });
   });
     // Conectar el botón de Pausa
