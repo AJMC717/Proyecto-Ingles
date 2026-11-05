@@ -31,6 +31,7 @@
       document.getElementById('login').style.display = 'none';
       document.getElementById('app').style.display = 'block';
       document.getElementById('nombreUser').textContent = user;
+      document.getElementById('nombreUserMenu').textContent = user;
     } else {
       mostrarAlerta('Error de acceso', '❌ Usuario o contraseña incorrectos. Intenta de nuevo.');
     }
@@ -257,4 +258,23 @@
     document.getElementById('login').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     document.getElementById('nombreUser').textContent = localStorage.getItem('userActual');
+    document.getElementById('nombreUserMenu').textContent = localStorage.getItem('userActual');
   }
+    // === MENÚ DE PERFIL ===
+  function toggleMenuPerfil() {
+    const menu = document.getElementById('menuPerfil');
+    if (menu.style.display === 'none' || menu.style.display === '') {
+      menu.style.display = 'block';
+    } else {
+      menu.style.display = 'none';
+    }
+  }
+
+  // Cerrar el menú si se hace clic fuera
+  document.addEventListener('click', function(event) {
+    const menu = document.getElementById('menuPerfil');
+    const btn = document.getElementById('btnPerfil');
+    if (menu && btn && !menu.contains(event.target) && !btn.contains(event.target)) {
+      menu.style.display = 'none';
+    }
+  });

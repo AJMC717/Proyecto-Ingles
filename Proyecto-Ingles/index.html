@@ -26,14 +26,33 @@
     
     <div class="decoracion-derecha">🎮  💃 🎤</div>
   </div>
-    <!-- APP MEJORADA -->
+    <!-- APP CON MENÚ DE PERFIL -->
   <div id="app" style="display:none">
-    <div class="tarjeta-login" style="margin: 50px auto;">
-      <h1 class="titulo-login">🦉 ¡Hola, <span id="nombreUser"></span>!</h1>
-      <p class="subtitulo">¿Qué quieres hacer hoy?</p>
+    <!-- Botón de perfil en esquina superior derecha -->
+    <div style="position:fixed; top:20px; right:20px; z-index:1000;">
+      <button id="btnPerfil" onclick="toggleMenuPerfil()" style="display:flex; align-items:center; gap:8px; padding:10px 18px; border-radius:25px; background:#58CC02; color:white; border:none; font-size:15px; font-weight:bold; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.3);">
+        <span style="font-size:18px;">👤</span>
+        <span>Perfil</span>
+      </button>
       
-      <button class="btn-entrar" id="btnHistorial" onclick="verHistorial()">📊 Ver mi historial</button>
-      <button class="btn-registro" onclick="cerrarSesion()">🚪 Cerrar sesión</button>
+      <!-- Menú desplegable -->
+      <div id="menuPerfil" style="display:none; position:absolute; top:60px; right:0; background:white; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.2); min-width:200px; overflow:hidden;">
+        <div style="padding:15px; background:#f5f5f5; border-bottom:1px solid #e5e5e5;">
+          <div style="font-weight:bold; color:#1B1035;">👤 <span id="nombreUserMenu"></span></div>
+        </div>
+        <button onclick="verHistorial(); toggleMenuPerfil();" style="width:100%; padding:12px 15px; background:white; border:none; text-align:left; cursor:pointer; font-size:14px; color:#1B1035;">
+          📊 Ver mi historial
+        </button>
+        <button onclick="cerrarSesion()" style="width:100%; padding:12px 15px; background:white; border:none; text-align:left; cursor:pointer; font-size:14px; color:#E74C3C; border-top:1px solid #e5e5e5;">
+          🚪 Cerrar sesión
+        </button>
+      </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div style="margin-top:80px;">
+      <h1 style="text-align:center; color:white; font-size:2rem; margin-bottom:10px;">🦉 ¡Hola, <span id="nombreUser"></span>!</h1>
+      <p style="text-align:center; color:white; font-size:1.1rem; margin-bottom:30px;">¿Qué quieres hacer hoy?</p>
     </div>
   </div>
     
