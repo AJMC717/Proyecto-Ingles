@@ -17,6 +17,10 @@
   let pronunciacionOk = false; // modo completo, paso 3: ¿ya lo dijo bien?
   let dificultadActual = "facil";
 
+  // Flash Cards: lo que se eligió en la pantalla de nivel
+  let categoriaFlash = "verbos";   // verbos, animales, comida, cosas o mix
+  let nivelFlash = "facil";        // facil, medio o dificil
+
 function seleccionarDificultad(nivel, btn) {
   dificultadActual = nivel;
 
@@ -54,42 +58,39 @@ function seleccionarDificultad(nivel, btn) {
      PASO 3: generar las preguntas según el modo elegido
      ============================================================ */
 
-  // Modo "escribir" y "elegir": una pregunta por cada uno de los 16 verbos
-  function generarPreguntasDeVerbo() {
-    return mezclar(verbos.map((_, idx) => idx)).map(idx => ({
-      verboIdx: idx,
-      img: verbos[idx].img,
-      respuestaCorrecta: verbos[idx].nombre,
-    }));
-  }
-
-  // Modo "conjugar": 12 preguntas al azar (verbo + pronombre + tiempo)
-  function generarPreguntasDeConjugacion() {
-    const tiempos = ["pasado", "presente", "futuro"];
+  // FLASH CARDS (completo, escribir, elegir, escuchar y hablar):
+  // las palabras dependen de la categoría y del nivel que se eligieron
+  function generarPreguntasFlash() {
+    const palabras = mezclar(palabrasDelNivel(categoriaFlash, nivelFlash)).slice(0, 10);
+    const todas = todasLasPalabras(categoriaFlash);
     const lista = [];
-    const verbosDeLaRonda = mezclar(verbos.map((_, idx) => idx)).slice(0, 12);
-    for (let i = 0; i < 12; i++) {
-      const verboIdx = verbosDeLaRonda[i];
-      const pronombreIdx = Math.floor(Math.random() * pronombres.length);
-      const tiempo = elegirAlAzar(tiempos);
-      const verbo = verbos[verboIdx];
 
-      let respuestaCorrecta;
-      if (tiempo === "pasado") respuestaCorrecta = verbo.past;
-      else if (tiempo === "futuro") respuestaCorrecta = verbo.fut;
-      else respuestaCorrecta = esTercera[pronombreIdx] ? verbo.pres3 : verbo.pres;
-
-      const etiquetaTiempo = { pasado: "Past", presente: "Present", futuro: "Future" }[tiempo];
-
-      lista.push({
-        verboIdx,
-        img: verbo.img,
-        pronombre: pronombres[pronombreIdx],
-        etiquetaTiempo,
-        respuestaCorrecta,
-      });
+    for (let i = 0; i < palabras.length; i++) {
+      const pregunta = {
+        verboIdx: i,                        // (se usa para cambiar los colores)
+        img: palabras[i].img,
+        respuestaCorrecta: palabras[i].palabra
+      };
+      if (modoActual === "elegir") {
+        pregunta.opcionesFlash = armarOpciones(palabras[i], todas);
+      }
+      lista.push(pregunta);
     }
     return lista;
+  }
+
+  // Opciones del modo "elegir": Easy = 3, Medium = 4, Hard = 6
+  function armarOpciones(palabra, todas) {
+    let cantidad = 4;
+    if (nivelFlash === "facil") cantidad = 3;
+    if (nivelFlash === "dificil") cantidad = 6;
+
+    const opciones = [palabra.palabra];
+    const otras = mezclar(todas);
+    for (let i = 0; i < otras.length && opciones.length < cantidad; i++) {
+      if (otras[i].palabra !== palabra.palabra) opciones.push(otras[i].palabra);
+    }
+    return opciones;
   }
 
   // Modo "oraciones": 12 preguntas al azar, armamos fichas con distractores
@@ -119,13 +120,12 @@ function seleccionarDificultad(nivel, btn) {
 }
 
   function iniciarModo(modo) {
-    const user = localStorage.getItem('userActual');
-    const estadoGuardado = JSON.parse(localStorage.getItem('estado_juego_' + user));
+    const estadoGuardado = JSON.parse(localStorage.getItem(claveGuardado(modo)));
 
     // 1. Verificar si hay partida guardada en ESTE modo
     if (estadoGuardado && estadoGuardado.modo === modo) {
       mostrarConfirm(
-        '️ Partida guardada encontrada',
+        '⏸️ Partida guardada encontrada',
         `Tienes una partida guardada en este modo:<br><br>
           📍 Pregunta: <b>${estadoGuardado.preguntaActual + 1}</b><br>
           ⭐ Puntos: <b>${estadoGuardado.puntos}</b><br>
@@ -134,6 +134,10 @@ function seleccionarDificultad(nivel, btn) {
         () => {
           // Acción si acepta (continuar)
           modoActual = estadoGuardado.modo;
+          if (estadoGuardado.dificultad) dificultadActual = estadoGuardado.dificultad;
+          if (estadoGuardado.nivelFlash) nivelFlash = estadoGuardado.nivelFlash;
+          if (estadoGuardado.categoriaFlash) categoriaFlash = estadoGuardado.categoriaFlash;
+          mejorRacha = leerMejorRacha(modo);
           preguntaActual = estadoGuardado.preguntaActual;
           puntos = estadoGuardado.puntos;
           racha = estadoGuardado.racha;
@@ -144,7 +148,7 @@ function seleccionarDificultad(nivel, btn) {
         },
         () => {
           // Acción si cancela (empezar de cero)
-          localStorage.removeItem('estado_juego_' + user);
+          localStorage.removeItem(claveGuardado(modo));
           iniciarModoNormal(modo);
         }
       );
@@ -162,14 +166,20 @@ function seleccionarDificultad(nivel, btn) {
     racha = 0;
     preguntaActual = 0;
 
-    if (modo === "escribir" || modo === "elegir" || modo === "escuchar" || modo === "hablar" || modo === "completo") {
-      preguntas = generarPreguntasDeVerbo();
-    } else if (modo === "conjugar") {
-      preguntas = generarPreguntasDeConjugacion();
+    if (MODOS_VERBOS.includes(modo)) {
+      preguntas = generarPreguntasFlash();
     } else if (modo === "oraciones") {
       preguntas = generarPreguntasDeOraciones();
     } else if (modo === "preguntas"){
       preguntas = generarPreguntasDePreguntas();
+    } else if (modo === "frases") {
+      preguntas = generarPreguntasDeFrases();
+    }
+
+    // Si ese nivel todavía no tiene contenido, avisamos y no abrimos el juego
+    if (preguntas.length === 0) {
+      mostrarAlerta('Aún no hay contenido', '🚧 Este nivel todavía no tiene preguntas en este modo. Prueba el nivel <b>Fácil</b>.');
+      return;
     }
 
     mostrarInterfazJuego();
@@ -181,16 +191,19 @@ function seleccionarDificultad(nivel, btn) {
     document.getElementById("juegoFinal").classList.add("oculto");
     document.getElementById("juegoEnCurso").classList.remove("oculto");
     document.getElementById("app").classList.add("oculto");
-    document.getElementById("btnHistorial").classList.add("oculto"); // el historial solo se ve en el menú inicial
+    document.getElementById("pantallaMenuVerbos").classList.add("oculto");
+    document.getElementById("pantallaNivel").classList.add("oculto");
+    // El cartelito del nivel solo se ve en Flash Cards
+    document.getElementById("chipNivel").classList.toggle("oculto", !MODOS_VERBOS.includes(modoActual));
 
-    document.getElementById("zonaTexto").classList.toggle("oculto", !(modoActual === "escribir" || modoActual === "conjugar" || modoActual === "escuchar" || modoActual === "completo"));
+    document.getElementById("zonaTexto").classList.toggle("oculto", !(modoActual === "escribir" || modoActual === "escuchar" || modoActual === "completo"));
     document.getElementById("zonaAudio").classList.toggle("oculto", modoActual !== "escuchar");
     document.getElementById("zonaHablar").classList.toggle("oculto", modoActual !== "hablar");
-    document.querySelector(".carrusel").classList.toggle("solo-audio", modoActual === "escuchar");
+    document.querySelector(".carrusel").classList.toggle("solo-audio", modoActual === "escuchar" && nivelFlash !== "facil");
     document.getElementById("zonaPaso").classList.add("oculto");
     document.getElementById("zonaOpciones").classList.toggle("oculto", modoActual !== "elegir" && modoActual !== "preguntas");
     document.getElementById("zonaOraciones").classList.toggle("oculto", modoActual !== "oraciones");
-    document.getElementById("consigna").classList.toggle("oculto", modoActual !== "conjugar" && modoActual !== "oraciones" && modoActual !== "preguntas");
+    document.getElementById("consigna").classList.toggle("oculto", modoActual !== "oraciones" && modoActual !== "preguntas");
   }
      
   
@@ -199,9 +212,9 @@ function seleccionarDificultad(nivel, btn) {
     if ("speechSynthesis" in window) window.speechSynthesis.cancel();
     document.getElementById("juegoEnCurso").classList.add("oculto");
     document.getElementById("juegoFinal").classList.add("oculto");
-    document.getElementById("pantallaMenu").classList.remove("oculto");
-    document.getElementById("app").classList.remove("oculto");
-    document.getElementById("btnHistorial").classList.remove("oculto");
+    // Vuelve al menú de donde vino: los modos de verbos al submenú, los demás al principal
+    if (MODOS_VERBOS.includes(modoActual)) mostrarMenuVerbos();
+    else mostrarMenuPrincipal();
   }
 
   /* ============================================================
@@ -212,7 +225,7 @@ function seleccionarDificultad(nivel, btn) {
     pintarColores(q.verboIdx);
 
     const img = document.getElementById("imagenActual");
-    img.src = q.img;
+    ponerImagen(img, q);
     img.classList.remove("entrando");
     void img.offsetWidth;
     img.classList.add("entrando");
@@ -220,24 +233,24 @@ function seleccionarDificultad(nivel, btn) {
     // Imagen anterior / siguiente, de fondo (en vez de botones)
     const anteriorQ = preguntas[(preguntaActual - 1 + preguntas.length) % preguntas.length];
     const siguienteQ = preguntas[(preguntaActual + 1) % preguntas.length];
-    document.getElementById("imagenAnterior").src = anteriorQ.img;
-    document.getElementById("imagenSiguiente").src = siguienteQ.img;
+    ponerImagen(document.getElementById("imagenAnterior"), anteriorQ);
+    ponerImagen(document.getElementById("imagenSiguiente"), siguienteQ);
 
     document.getElementById("chipPregunta").textContent =
       "Question " + (preguntaActual + 1) + "/" + preguntas.length;
     document.getElementById("chipPuntos").textContent = "⭐ " + puntos + " points";
     document.getElementById("chipRacha").textContent = "🔥 Streak: " + racha;
 
+    // Cartelito con el nivel y la categoría (solo en Flash Cards)
+    document.getElementById("chipNivel").textContent = nombreNivelFlash() + " · " + nombreCategoriaFlash();
+
     mensaje.textContent = "";
     respondiendo = false;
     intentos = 0;
 
     if (modoActual === "escribir") {
-      inputRespuesta.placeholder = "Write the verb in English...";
-      prepararZonaTexto();
-    } else if (modoActual === "conjugar") {
-      document.getElementById("consigna").textContent = q.pronombre + " — " + q.etiquetaTiempo;
-      inputRespuesta.placeholder = "Write the correct form...";
+      inputRespuesta.placeholder = textoPlaceholder();
+      ponerPista(pistaDeLetras(q.respuestaCorrecta));   // la pista depende del nivel
       prepararZonaTexto();
     } else if (modoActual === "elegir") {
       prepararZonaOpciones(q);
@@ -249,14 +262,18 @@ function seleccionarDificultad(nivel, btn) {
       inputRespuesta.placeholder = "Write what you heard...";
       prepararZonaTexto();
       // Esperamos un ratito para que cargue la tarjeta y reproducimos el verbo
-      setTimeout(() => decirEnVozAlta(q.respuestaCorrecta, 0.9), 400);
+      setTimeout(() => decirEnVozAlta(q.respuestaCorrecta, velocidadDeNivel()), 400);
     } else if (modoActual === "hablar") {
+      // En Easy se muestra la palabra escrita como ayuda; en los otros niveles no
+      ponerPista(nivelFlash === "facil" ? q.respuestaCorrecta : "");
       prepararZonaHablar();
     } else if (modoActual === "completo") {
       irAPaso(1);
     } else if (modoActual === "preguntas") {
       document.getElementById("consigna").textContent = q.preguntaTexto;
       prepararZonaOpciones(q);
+    } else if (modoActual === "frases") {
+      irAPasoFrase(1);
     }
   }
 
@@ -268,7 +285,7 @@ function seleccionarDificultad(nivel, btn) {
   }
 
   /* ============================================================
-     PASO 6a: modo "escribir" y "conjugar" -> se escribe la respuesta
+     PASO 6a: modos "escribir", "escuchar" y "completo" -> se escribe la respuesta
      ============================================================ */
   function verificarTexto() {
     if (respondiendo) return;
@@ -276,7 +293,10 @@ function seleccionarDificultad(nivel, btn) {
 
     const q = preguntas[preguntaActual];
     const escrito = inputRespuesta.value.trim().toLowerCase();
-    const esCorrecto = escrito === q.respuestaCorrecta.toLowerCase();
+    // En las frases se ignoran mayúsculas y signos (¿ ? ! . ,)
+    const esCorrecto = modoActual === "frases"
+      ? normalizarFrase(escrito) === normalizarFrase(q.respuestaCorrecta)
+      : escrito === q.respuestaCorrecta.toLowerCase();
 
     // Si se equivoca, se queda en la misma pregunta y puede intentar otra vez
     if (!esCorrecto) {
@@ -289,10 +309,12 @@ function seleccionarDificultad(nivel, btn) {
     }
 
     inputRespuesta.disabled = true;
-    marcarResultado(esCorrecto, q.respuestaCorrecta);
+    // En las frases, los puntos se dan solo en el paso 1 (armar); aquí es práctica
+    marcarResultado(esCorrecto, q.respuestaCorrecta, modoActual !== "frases");
     inputRespuesta.classList.add(esCorrecto ? "correcta" : "incorrecta");
 
     if (modoActual === "completo") setTimeout(() => irAPaso(2), 1500);
+    else if (modoActual === "frases") setTimeout(() => irAPasoFrase(3), 1800);
     else avanzar();
   }
 
@@ -305,11 +327,17 @@ function seleccionarDificultad(nivel, btn) {
      PASO 6b: modo "elegir" -> se elige entre 4 opciones
      ============================================================ */
   function prepararZonaOpciones(q) {
-    const otros = mezclar(
-      verbos.map((_, idx) => idx).filter(idx => idx !== q.verboIdx)
-    ).slice(0, 3).map(idx => verbos[idx].nombre);
-
-    const opciones = mezclar([q.respuestaCorrecta, ...otros]);
+    let opciones;
+    if (q.opcionesFlash) {
+      // Flash Cards: las opciones ya vienen armadas según el nivel
+      opciones = mezclar(q.opcionesFlash);
+    } else {
+      // Los demás modos siguen como estaban
+      const otros = mezclar(
+        verbos.map((_, idx) => idx).filter(idx => idx !== q.verboIdx)
+      ).slice(0, 3).map(idx => verbos[idx].nombre);
+      opciones = mezclar([q.respuestaCorrecta, ...otros]);
+    }
 
     const contenedor = document.getElementById("zonaOpciones");
     contenedor.innerHTML = "";
@@ -417,7 +445,8 @@ function seleccionarDificultad(nivel, btn) {
     }
 
     marcarResultado(esCorrecto, q.oracionCorrecta);
-    avanzar();
+    if (modoActual === "frases") setTimeout(() => irAPasoFrase(2), 1800); // sigue: escribir
+    else avanzar();
   }
 
   document.getElementById("btnVerificarOracion").addEventListener("click", verificarOracion);
@@ -429,7 +458,7 @@ function seleccionarDificultad(nivel, btn) {
   // No se avanza hasta acertar.
   function manejarFallo(respuestaCorrecta, extra) {
     intentos++;
-    if (intentos === 1 && !(modoActual === "completo" && pasoCompleto === 3)) {
+    if (intentos === 1 && !(modoActual === "completo" && pasoCompleto === 3) && !(modoActual === "frases" && pasoFrase !== 1)) {
       racha = 0;
       document.getElementById("chipRacha").textContent = "🔥 Streak: " + racha;
     }
@@ -442,20 +471,20 @@ function seleccionarDificultad(nivel, btn) {
     if (extra) mensaje.textContent += " — " + extra;
   }
 
-  function marcarResultado(esCorrecto, respuestaCorrecta) {
+  function marcarResultado(esCorrecto, respuestaCorrecta, sumarPuntos = true) {
     document.querySelector(".carrusel").classList.add("revelada");
     decirEnVozAlta(respuestaCorrecta, 0.9); // al responder, escuchás la pronunciación correcta
     if (esCorrecto) {
       mensaje.textContent = "Great job! 🎉";
       // Los puntos y la racha solo se suman si acertó a la primera
-      if (intentos === 0) {
+      if (intentos === 0 && sumarPuntos) {
         puntos += 10;
         racha += 1;
         if (racha > mejorRacha) {
           mejorRacha = racha;
           guardarMejorRacha(modoActual, mejorRacha);
         }
-      } else {
+      } else if (intentos > 0) {
         mensaje.textContent = "Correct! 👍 (no points, you needed help)";
       }
     } else {
@@ -466,28 +495,23 @@ function seleccionarDificultad(nivel, btn) {
     document.getElementById("chipRacha").textContent = "🔥 Streak: " + racha;
   }
 
- function avanzar() {
-    const inicio = Date.now();
-    // Espera a que termine el audio (mínimo 1.7 s, máximo 10 s por si el navegador se queda pegado)
-    const espera = setInterval(() => {
-      const transcurrido = Date.now() - inicio;
-      const hablando = "speechSynthesis" in window &&
-        (window.speechSynthesis.speaking || window.speechSynthesis.pending);
-      if (transcurrido < 1800 || (hablando && transcurrido < 1800)) return;
-      clearInterval(espera);
+  function avanzar() {
+    // Espera 1,8 segundos (para ver el resultado y oír el audio) y pasa a la siguiente pregunta
+    setTimeout(function () {
       preguntaActual++;
       if (preguntaActual < preguntas.length) {
         mostrarPregunta();
       } else {
         mostrarPantallaFinal();
       }
-    }, 150);
+    }, 1800);
   }
 
   /* ============================================================
      PASO 8: pantalla final con resumen y galería premio
      ============================================================ */
   function mostrarPantallaFinal() {    guardarResumenEnHistorial();
+    localStorage.removeItem(claveGuardado(modoActual));
     document.getElementById("juegoEnCurso").classList.add("oculto");
     document.getElementById("juegoFinal").classList.remove("oculto");
 
@@ -498,9 +522,11 @@ function seleccionarDificultad(nivel, btn) {
 
     const galeria = document.getElementById("galeria");
     galeria.innerHTML = "";
-    verbos.forEach(v => {
+    // El premio son las imágenes de la ronda (en Flash Cards y Frases); en los demás, los verbos
+    const imagenesPremio = (modoActual === "frases" || MODOS_VERBOS.includes(modoActual)) ? preguntas : verbos;
+    imagenesPremio.forEach(v => {
       const img = document.createElement("img");
-      img.src = v.img;
+      ponerImagen(img, v);
       galeria.appendChild(img);
     });
   }
@@ -510,17 +536,31 @@ function seleccionarDificultad(nivel, btn) {
   document.getElementById("btnVolverMenu").addEventListener("click", volverAlMenu);
 
     // === SISTEMA DE PAUSA Y GUARDADO DE PARTIDA ===
-  function guardarEstadoJuego() {
+
+  // Nombre con el que se guarda la partida pausada.
+  // Cada opción de Flash Cards (modo + categoría + nivel) tiene su propia partida,
+  // así "Write the word / Verbs / Easy" no se mezcla con "Write the word / Animals / Easy".
+  // Los demás modos siguen con una sola partida guardada por usuario, como antes.
+  function claveGuardado(modo) {
     const user = localStorage.getItem('userActual');
+    if (MODOS_VERBOS.includes(modo)) {
+      return 'estado_flash_' + user + '|' + modo + '|' + categoriaFlash + '|' + nivelFlash;
+    }
+    return 'estado_juego_' + user;
+  }
+  function guardarEstadoJuego() {
     const estado = {
       modo: modoActual,
+      dificultad: dificultadActual,
+      nivelFlash: nivelFlash,
+      categoriaFlash: categoriaFlash,
       preguntaActual: preguntaActual,
       puntos: puntos,
       racha: racha,
       preguntas: preguntas, // Guarda el orden exacto de las preguntas
-      pasoCompleto: typeof pasoCompleto !== 'undefined' ? pasoCompleto : 1
+      pasoCompleto: pasoCompleto
     };
-    localStorage.setItem('estado_juego_' + user, JSON.stringify(estado));
+    localStorage.setItem(claveGuardado(modoActual), JSON.stringify(estado));
     mostrarAlerta('⏸️ Juego pausado', '✅ Tu progreso fue guardado correctamente.<br><br>Puedes salir y continuar cuando quieras.');
     volverAlMenu();
   }
@@ -540,15 +580,19 @@ function seleccionarDificultad(nivel, btn) {
     document.getElementById("zonaAudio").classList.toggle("oculto", n !== 2);
     document.getElementById("zonaHablar").classList.toggle("oculto", n !== 3);
     document.getElementById("zonaPaso").classList.toggle("oculto", n === 1);
-    consigna.classList.toggle("oculto", n === 1);
-    consigna.textContent = q.respuestaCorrecta;
+    if (n === 1) {
+      ponerPista(pistaDeLetras(q.respuestaCorrecta));   // pista según el nivel (puede estar vacía)
+    } else {
+      consigna.textContent = q.respuestaCorrecta;
+      consigna.classList.remove("oculto");
+    }
     respondiendo = false;
     intentos = 0;
     pronunciacionOk = false;
 
     if (n === 1) {
       document.querySelector(".carrusel").classList.remove("revelada");
-      inputRespuesta.placeholder = "Write the verb in English...";
+      inputRespuesta.placeholder = textoPlaceholder();
       prepararZonaTexto();
     } else if (n === 2) {
       mensaje.textContent = "🔊 Step 2: listen to the word as many times as you want.";
@@ -561,6 +605,7 @@ function seleccionarDificultad(nivel, btn) {
   }
 
   btnPaso.addEventListener("click", () => {
+    if (modoActual === "frases") { botonSiguienteFrase(); return; }
     if (pasoCompleto === 2) {
       irAPaso(3);
     } else {
@@ -579,18 +624,241 @@ function seleccionarDificultad(nivel, btn) {
   /* ============================================================
      PASO 9: conectar las tarjetas del menú principal
      ============================================================ */
-  document.querySelectorAll(".tarjeta-modo").forEach(tarjeta => {
-    tarjeta.addEventListener("click", async () => {
+  // Pide permiso para usar el micrófono ANTES de empezar y luego ejecuta "despues"
+  function pedirMicrofono(despues) {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      despues();
+      return;
+    }
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(function (flujo) {
+        flujo.getTracks().forEach(function (t) { t.stop(); });  // solo era para pedir el permiso
+        despues();
+      })
+      .catch(function () {
+        despues();   // si lo bloquean, el juego abre igual y avisa al tocar el micrófono
+      });
+  }
+
+  document.querySelectorAll(".tarjeta-modo").forEach(function (tarjeta) {
+    tarjeta.addEventListener("click", function () {
       const modo = tarjeta.dataset.modo;
-      // En los modos con voz pedimos el permiso del micrófono ANTES de empezar
-      if ((modo === "hablar" || modo === "completo") && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        try {
-          const flujo = await navigator.mediaDevices.getUserMedia({ audio: true });
-          flujo.getTracks().forEach(t => t.stop()); // solo era para pedir permiso
-        } catch (e) { /* si lo bloquean, el juego abre igual y avisa al tocar el micrófono */ }
-      }
-      iniciarModoNormal(modo);
+      // La tarjeta "Write, Listen and Speak" del menú principal solo abre el submenú
+      if (modo === "submenu-verbos") { mostrarMenuVerbos(); return; }
+      // Los modos de Flash Cards pasan primero por la pantalla de nivel
+      if (MODOS_VERBOS.includes(modo)) { abrirPantallaNivel(modo); return; }
+      // Frases: pedimos el micrófono antes de empezar
+      if (modo === "frases") { pedirMicrofono(function () { iniciarModo(modo); }); return; }
+      iniciarModo(modo);
     });
   });
     // Conectar el botón de Pausa
   document.getElementById("btnPausa").addEventListener("click", guardarEstadoJuego);
+
+
+  /* ============================================================
+     MENÚS: principal y submenú de verbos
+     ============================================================ */
+  const MODOS_VERBOS = ["completo", "escribir", "elegir", "escuchar", "hablar"];
+
+  function mostrarMenuPrincipal() {
+    document.getElementById("pantallaMenu").classList.remove("oculto");
+    document.getElementById("pantallaMenuVerbos").classList.add("oculto");
+    document.getElementById("pantallaNivel").classList.add("oculto");
+    document.getElementById("app").classList.remove("oculto"); // saludo, Perfil, historial y cerrar sesión
+  }
+
+  function mostrarMenuVerbos() {
+    document.getElementById("pantallaMenu").classList.add("oculto");
+    document.getElementById("pantallaMenuVerbos").classList.remove("oculto");
+    document.getElementById("pantallaNivel").classList.add("oculto");
+    document.getElementById("app").classList.add("oculto");
+  }
+
+  document.getElementById("btnVolverPrincipal").addEventListener("click", mostrarMenuPrincipal);
+
+  /* ============================================================
+     FLASH CARDS: pantalla para elegir la categoría y el nivel
+     Al tocar una opción de Flash Cards, primero se elige QUÉ practicar
+     (verbos, animales...) y el NIVEL (Easy, Medium, Hard).
+     ============================================================ */
+  let modoPendiente = null;   // la opción de Flash Cards que tocó el usuario
+
+  function abrirPantallaNivel(modo) {
+    modoPendiente = modo;
+    const nombres = {
+      completo: "Write, Listen and Speak",
+      escribir: "Write the word",
+      elegir: "Choose the right word",
+      escuchar: "Listen and write",
+      hablar: "Speak"
+    };
+    document.getElementById("tituloNivel").textContent = nombres[modo];
+    dibujarCategorias();
+    document.getElementById("pantallaMenuVerbos").classList.add("oculto");
+    document.getElementById("pantallaNivel").classList.remove("oculto");
+  }
+
+  // Dibuja los botones de categoría (Verbs, Animals, Food...) y marca el elegido
+  function dibujarCategorias() {
+    const fila = document.getElementById("filaCategorias");
+    fila.innerHTML = "";
+    for (let i = 0; i < CATEGORIAS.length; i++) {
+      const categoria = CATEGORIAS[i];
+      const boton = document.createElement("button");
+      boton.className = "chip-categoria";
+      if (categoria.id === categoriaFlash) boton.className += " activa";
+      boton.textContent = categoria.emoji + " " + categoria.nombre;
+      boton.addEventListener("click", function () {
+        categoriaFlash = categoria.id;
+        dibujarCategorias();
+      });
+      fila.appendChild(boton);
+    }
+  }
+
+  // Al tocar un nivel empieza el juego
+  document.querySelectorAll(".boton-nivel").forEach(function (boton) {
+    boton.addEventListener("click", function () {
+      nivelFlash = boton.dataset.nivel;
+      const modo = modoPendiente;
+      if (modo === "hablar" || modo === "completo") {
+        pedirMicrofono(function () { iniciarModo(modo); });
+      } else {
+        iniciarModo(modo);
+      }
+    });
+  });
+
+  document.getElementById("btnVolverNivel").addEventListener("click", mostrarMenuVerbos);
+
+  /* ============================================================
+     FLASH CARDS: cómo cambia cada opción según el nivel
+     ============================================================ */
+
+  // Muestra un texto de ayuda sobre la imagen (si el texto está vacío, lo esconde)
+  function ponerPista(texto) {
+    const consigna = document.getElementById("consigna");
+    consigna.textContent = texto;
+    consigna.classList.toggle("oculto", texto === "");
+  }
+
+  // Pista de letras: Easy = primera letra + rayitas ("C _ _"), Medium = solo rayitas, Hard = nada
+  function pistaDeLetras(palabra) {
+    if (nivelFlash === "dificil") return "";
+    let pista = "";
+    for (let i = 0; i < palabra.length; i++) {
+      if (i === 0 && nivelFlash === "facil") pista += palabra.charAt(0).toUpperCase() + " ";
+      else pista += "_ ";
+    }
+    return pista.trim();
+  }
+
+  // Velocidad de la voz al escuchar: Easy lenta, Medium normal, Hard rápida
+  function velocidadDeNivel() {
+    if (nivelFlash === "facil") return 0.7;
+    if (nivelFlash === "dificil") return 1.0;
+    return 0.9;
+  }
+
+  // Texto de ayuda del campo para escribir ("verb" si son los dibujos, "word" en las demás categorías)
+  function textoPlaceholder() {
+    if (categoriaFlash === "verbos") return "Write the verb in English...";
+    return "Write the word in English...";
+  }
+
+  function nombreNivelFlash() {
+    return NIVELES[nivelFlash].emoji + " " + NIVELES[nivelFlash].nombre;
+  }
+
+  function nombreCategoriaFlash() {
+    for (let i = 0; i < CATEGORIAS.length; i++) {
+      if (CATEGORIAS[i].id === categoriaFlash) return CATEGORIAS[i].emoji + " " + CATEGORIAS[i].nombre;
+    }
+    return "";
+  }
+
+  /* ============================================================
+     IMÁGENES con respaldo (si la imagen no existe se usa el dibujo de respaldo)
+     ============================================================ */
+  function ponerImagen(elemento, q) {
+    elemento.onerror = null;
+    if (q.imgRespaldo) {
+      elemento.onerror = () => { elemento.onerror = null; elemento.src = q.imgRespaldo; };
+    }
+    elemento.src = q.img;
+  }
+
+  /* ============================================================
+     MODO "FRASES DE USO FRECUENTE": 4 pasos por frase
+     Paso 1: armar la frase con fichas -> Paso 2: escribirla
+     Paso 3: escucharla -> Paso 4: decirla (y pasa a la siguiente frase)
+     ============================================================ */
+  let pasoFrase = 1;
+
+  function normalizarFrase(texto) {
+    return texto.toLowerCase().replace(/[¿?¡!.,]/g, "").replace(/\s+/g, " ").trim();
+  }
+
+  function generarPreguntasDeFrases() {
+    const lista = datosFrases[dificultadActual] || [];
+    return mezclar(lista).map((item, idx) => ({
+      verboIdx: idx,
+      img: rutaImagenFrase(item.img),
+      imgRespaldo: imagenRespaldoFrase(item.icono),
+      oracionCorrecta: item.texto,    // paso 1 (armar)
+      respuestaCorrecta: item.texto,  // pasos 2, 3 y 4 (escribir, escuchar, hablar)
+      traduccion: item.es,
+      fichas: mezclar(item.texto.split(" "))
+    }));
+  }
+
+  function irAPasoFrase(n) {
+    pasoFrase = n;
+    const q = preguntas[preguntaActual];
+    const consigna = document.getElementById("consigna");
+    document.getElementById("zonaOraciones").classList.toggle("oculto", n !== 1);
+    document.getElementById("zonaTexto").classList.toggle("oculto", n !== 2);
+    document.getElementById("zonaAudio").classList.toggle("oculto", n !== 3);
+    document.getElementById("zonaHablar").classList.toggle("oculto", n !== 4);
+    document.getElementById("zonaPaso").classList.toggle("oculto", n < 3);
+    consigna.classList.remove("oculto");
+    respondiendo = false;
+    intentos = 0;
+    pronunciacionOk = false;
+
+    if (n === 1) {
+      consigna.textContent = q.traduccion;
+      mensaje.textContent = "🧩 Step 1: tap the words to build the phrase.";
+      prepararZonaOraciones(q);
+    } else if (n === 2) {
+      consigna.textContent = q.traduccion;
+      mensaje.textContent = "✍️ Step 2: now write the phrase yourself.";
+      inputRespuesta.placeholder = "Write the phrase in English...";
+      prepararZonaTexto();
+    } else if (n === 3) {
+      consigna.textContent = q.respuestaCorrecta;
+      mensaje.textContent = "🔊 Step 3: listen to the phrase as many times as you want.";
+      btnPaso.textContent = "Now speak ➡";
+      decirEnVozAlta(q.respuestaCorrecta, 0.9);
+    } else {
+      consigna.textContent = q.respuestaCorrecta;
+      mensaje.textContent = "🎤 Step 4: say the phrase out loud!";
+      btnPaso.textContent = "Next phrase ➡";
+      prepararZonaHablar();
+    }
+  }
+
+  // Botón de abajo en los pasos 3 y 4 de las frases
+  function botonSiguienteFrase() {
+    if (pasoFrase === 3) { irAPasoFrase(4); return; }
+    // Para pasar a la siguiente frase hay que pronunciar bien (si el navegador reconoce voz)
+    if (!pronunciacionOk && ReconocimientoVoz) {
+      mensaje.textContent = "🎤 Say the phrase correctly to go to the next one.";
+      return;
+    }
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    preguntaActual++;
+    if (preguntaActual < preguntas.length) mostrarPregunta();
+    else mostrarPantallaFinal();
+  }

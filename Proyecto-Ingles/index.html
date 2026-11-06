@@ -76,28 +76,16 @@
 
     <div class="menu-modos">
 
-      <button class="tarjeta-modo" data-modo="preguntas">
-        <span class="emoji-modo">❓</span>
-        <div class="titulo-modo">Questions & Answers</div>
-        <div class="desc-modo">Read the question and choose the correct answer.</div>
-      </button>
-
-      <button class="tarjeta-modo" data-modo="completo">
+      <button class="tarjeta-modo" data-modo="submenu-verbos">
         <span class="emoji-modo">🌟</span>
         <div class="titulo-modo">Write, Listen and Speak</div>
-        <div class="desc-modo">For each picture: write the verb, listen to it, then say it out loud.</div>
+        <div class="desc-modo">Practice words with pictures: write, choose, listen and speak.</div>
       </button>
 
-      <button class="tarjeta-modo" data-modo="escribir">
-        <span class="emoji-modo">✍️</span>
-        <div class="titulo-modo">Write the verb</div>
-        <div class="desc-modo">Look at the picture and write the verb in English.</div>
-      </button>
-
-      <button class="tarjeta-modo" data-modo="elegir">
-        <span class="emoji-modo">🔤</span>
-        <div class="titulo-modo">Choose the right word</div>
-        <div class="desc-modo">Look at the picture and choose the verb from 4 options.</div>
+      <button class="tarjeta-modo" data-modo="preguntas">
+        <span class="emoji-modo">❓</span>
+        <div class="titulo-modo">Questions &amp; Answers</div>
+        <div class="desc-modo">Read the question and choose the correct answer.</div>
       </button>
 
       <button class="tarjeta-modo" data-modo="oraciones">
@@ -106,16 +94,78 @@
         <div class="desc-modo">Build the correct sentence by tapping the words in the right order.</div>
       </button>
 
+      <button class="tarjeta-modo" data-modo="frases">
+        <span class="emoji-modo">💬</span>
+        <div class="titulo-modo">Frases de uso frecuente</div>
+        <div class="desc-modo">Build, write, listen to and say the most common phrases.</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SUBMENÚ: opciones de "Write, Listen and Speak" (los verbos con dibujos)
+       ============================================================ -->
+  <div id="pantallaMenuVerbos" class="oculto">
+    <button class="btn-menu" id="btnVolverPrincipal">⬅ Back</button>
+    <h1>🌟 Write, Listen and Speak</h1>
+
+    <div class="menu-modos">
+
+      <button class="tarjeta-modo" data-modo="completo">
+        <span class="emoji-modo">🌟</span>
+        <div class="titulo-modo">Write, Listen and Speak</div>
+        <div class="desc-modo">For each picture: write the word, listen to it, then say it out loud.</div>
+      </button>
+
+      <button class="tarjeta-modo" data-modo="escribir">
+        <span class="emoji-modo">✍️</span>
+        <div class="titulo-modo">Write the word</div>
+        <div class="desc-modo">Look at the picture and write the word in English.</div>
+      </button>
+
+      <button class="tarjeta-modo" data-modo="elegir">
+        <span class="emoji-modo">🔤</span>
+        <div class="titulo-modo">Choose the right word</div>
+        <div class="desc-modo">Look at the picture and choose the right word.</div>
+      </button>
+
       <button class="tarjeta-modo" data-modo="escuchar">
         <span class="emoji-modo">🎧</span>
         <div class="titulo-modo">Listen and write</div>
-        <div class="desc-modo">Listen to the verb (the picture is blurred) and write it.</div>
+        <div class="desc-modo">Listen to the word and write it.</div>
       </button>
 
       <button class="tarjeta-modo" data-modo="hablar">
         <span class="emoji-modo">🎤</span>
         <div class="titulo-modo">Speak</div>
-        <div class="desc-modo">Look at the picture and say the verb in English out loud.</div>
+        <div class="desc-modo">Look at the picture and say the word in English out loud.</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       PANTALLA DE NIVEL (Flash Cards): primero se elige qué practicar y el nivel
+       ============================================================ -->
+  <div id="pantallaNivel" class="oculto">
+    <button class="btn-menu" id="btnVolverNivel">⬅ Back</button>
+    <h1 id="tituloNivel">Choose your level</h1>
+
+    <p class="texto-ayuda">1. What do you want to practice?</p>
+    <div class="fila-categorias" id="filaCategorias"></div>
+
+    <p class="texto-ayuda">2. Choose your level</p>
+    <div class="lista-niveles">
+      <button class="boton-nivel" data-nivel="facil">
+        <span class="nivel-emoji">🟢</span>
+        <span><b>Easy</b><br>Short words (up to 4 letters) and extra help.</span>
+      </button>
+      <button class="boton-nivel" data-nivel="medio">
+        <span class="nivel-emoji">🟡</span>
+        <span><b>Medium</b><br>Medium words (5 to 7 letters) and less help.</span>
+      </button>
+      <button class="boton-nivel" data-nivel="dificil">
+        <span class="nivel-emoji">🔴</span>
+        <span><b>Hard</b><br>Long words (8 letters or more) and no help.</span>
       </button>
     </div>
   </div>
@@ -125,11 +175,12 @@
        ============================================================ -->
   <div id="juegoEnCurso" class="oculto">
     <button class="btn-menu" id="btnVolverMenu">🏠 Choose another mode</button>
-    <button class="btn-menu" id="btnPausa" style="background:#FF9100; color:white; margin-left:10px;">⏸️ Pausar y Guardar</button>
+    <button class="btn-menu btn-pausa" id="btnPausa">⏸️ Pausar y Guardar</button>
     <div class="marcador">
       <div class="chip" id="chipPregunta">Question 1/16</div>
       <div class="chip" id="chipPuntos">⭐ 0 points</div>
       <div class="chip" id="chipRacha">🔥 Streak: 0</div>
+      <div class="chip oculto" id="chipNivel"></div>
     </div>
 
     <div class="carrusel">
@@ -166,7 +217,7 @@
     <div class="constructor-oracion oculto" id="zonaOraciones">
       <div class="franja-respuesta" id="franjaRespuesta"></div>
       <div class="banco-fichas" id="bancoFichas"></div>
-      <button class="boton" id="btnVerificarOracion" style="margin-top:14px;">Check ✅</button>
+      <button class="boton btn-comprobar" id="btnVerificarOracion">Check ✅</button>
     </div>
 
     <!-- Se usa en el modo "hablar": micrófono -->
@@ -251,6 +302,7 @@
 
   <!-- Código (el orden importa: primero los datos, el juego al final) -->
   <script src="js/datos.js"></script>
+  <script src="js/vocabulario.js"></script>
   <script src="js/usuarios.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/juego.js"></script>

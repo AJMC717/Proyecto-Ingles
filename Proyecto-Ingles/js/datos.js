@@ -104,3 +104,37 @@ const datosPreguntas = {
     { pregunta: "What would you do if it rains?", opciones: ["I will bring an umbrella", "I stayed at home", "I would take an umbrella"], correcta: 2 }
   ]
 };
+
+
+  /* ============================================================
+     FRASES DE USO FRECUENTE
+     Las imágenes van en la carpeta "imagenes_frases" (junto a index.html).
+     Cada frase tiene el nombre del archivo en "img" (sin la extensión).
+     Si todavía no existe la imagen, se muestra un dibujo de respaldo con el "icono".
+     Para agregar frases: copia una línea y cambia sus datos. Los niveles
+     "medio" y "dificil" están vacíos a propósito (los hacen otros compañeros).
+     ============================================================ */
+  const CARPETA_IMAGENES_FRASES = "imagenes_frases/";
+  const EXTENSION_IMAGENES_FRASES = ".jpeg";
+
+  function rutaImagenFrase(nombre) {
+    return CARPETA_IMAGENES_FRASES + nombre + EXTENSION_IMAGENES_FRASES;
+  }
+
+  // Dibujo de respaldo (SVG) mientras no exista la imagen de la frase
+  function imagenRespaldoFrase(icono) {
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect width="400" height="400" rx="40" fill="#EDE7FF"/><text x="200" y="250" font-size="170" text-anchor="middle">' + icono + '</text></svg>';
+    return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+  }
+
+  const datosFrases = {
+    facil: [
+      { texto: "Good morning",        es: "Buenos días",     img: "GoodMorning",      icono: "🌅" },
+      { texto: "How are you?",        es: "¿Cómo estás?",    img: "HowAreYou",        icono: "🙂" },
+      { texto: "What is your name?",  es: "¿Cómo te llamas?", img: "WhatIsYourName",  icono: "🏷️" },
+      { texto: "Nice to meet you",    es: "Mucho gusto",     img: "NiceToMeetYou",    icono: "🤝" },
+      { texto: "Thank you very much", es: "Muchas gracias",  img: "ThankYouVeryMuch", icono: "🙏" }
+    ],
+    medio: [],
+    dificil: []
+  };

@@ -68,11 +68,19 @@ function decirPalabraRapida(texto) {
   let escuchando = false;
   const btnMic = document.getElementById("btnMic");
 
+  // Texto del botón del micrófono según el modo
+  function textoBotonMic() {
+    if (modoActual === "frases") return "🎤 Tap and say the phrase";
+    // En Flash Cards: "verb" si son los dibujos de verbos, "word" en las demás categorías
+    if (MODOS_VERBOS.includes(modoActual) && categoriaFlash !== "verbos") return "🎤 Tap and say the word";
+    return "🎤 Tap and say the verb";
+  }
+
   function prepararZonaHablar() {
     escuchando = false;
     btnMic.classList.remove("escuchando");
     btnMic.disabled = false;
-    btnMic.textContent = "🎤 Tap and say the verb";
+    btnMic.textContent = textoBotonMic();
    
     if (!ReconocimientoVoz) {
       mensaje.textContent = "Your browser can't recognize speech. Try Chrome or Edge.";
@@ -112,7 +120,7 @@ function decirPalabraRapida(texto) {
     reconocimiento.onend = () => {
       escuchando = false;
       btnMic.classList.remove("escuchando");
-      if (!respondiendo) btnMic.textContent = "🎤 Tap and say the verb";
+      if (!respondiendo) btnMic.textContent = textoBotonMic();
     };
 
     reconocimiento.start();
@@ -131,7 +139,7 @@ function decirPalabraRapida(texto) {
     const escuchadas = alternativas.map(limpiarTexto);
 
     // En el modo "completo" se puede intentar las veces que quieras (no suma puntos)
-    if (modoActual === "completo") {
+    if (modoActual === "completo" || modoActual === "frases") {
       respondiendo = false;
       const ok = escuchadas.some(t => t === correcta || t.split(" ").includes(correcta));
       mensaje.textContent = ok ? "Great pronunciation! 🎤🎉"

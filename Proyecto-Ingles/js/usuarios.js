@@ -188,17 +188,24 @@
     
     const nombresModos = {
       'completo': 'Write, Listen and Speak',
-      'escribir': 'Write the verb',
+      'escribir': 'Write the word',
       'elegir': 'Choose the right word',
       'conjugar': 'Practice conjugations',
       'oraciones': 'Build sentences',
       'escuchar': 'Listen and write',
-      'hablar': 'Speak'
+      'hablar': 'Speak',
+      'frases': 'Frases de uso frecuente'
     };
+
+    // En Flash Cards se anota también el nivel y la categoría
+    let nombreModo = nombresModos[modoActual] || modoActual;
+    if (MODOS_VERBOS.includes(modoActual)) {
+      nombreModo += ' (' + nombreNivelFlash() + ', ' + nombreCategoriaFlash() + ')';
+    }
 
     historial.push({
       fecha: new Date().toLocaleString(),
-      modo: nombresModos[modoActual] || modoActual,
+      modo: nombreModo,
       puntaje: puntos,
       rachaMaxima: mejorRacha
     });
@@ -249,7 +256,16 @@
   function cerrarSesion() {
     const user = localStorage.getItem('userActual');
     localStorage.removeItem('userActual');
-    localStorage.removeItem('estado_juego_' + user); // Borra partida pausada al salir
+    // Borra las partidas pausadas al salir (la de siempre y las de Flash Cards)
+    localStorage.removeItem('estado_juego_' + user);
+    const clavesFlash = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const clave = localStorage.key(i);
+      if (clave.indexOf('estado_flash_' + user + '|') === 0) clavesFlash.push(clave);
+    }
+    for (let i = 0; i < clavesFlash.length; i++) {
+      localStorage.removeItem(clavesFlash[i]);
+    }
     location.reload();
   }
 
