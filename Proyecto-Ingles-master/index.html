@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learn English Verbs</title>
+
+<!-- Estilos (todo el aspecto) -->
+<link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+    <!-- LOGIN MEJORADO -->
+  <div id="login">
+    <div class="decoracion-izquierda"> ✏️ 🎧 ️</div>
+    
+    <div class="tarjeta-login">
+      <h1 class="titulo-login">🦉 Aprende Verbos</h1>
+      <p class="subtitulo">Inicia sesión para continuar</p>
+      
+      <input type="text" id="user" placeholder="👤 Usuario" onkeypress="if(event.key === 'Enter') document.getElementById('pass').focus()">
+      <input type="password" id="pass" placeholder=" Contraseña" onkeypress="if(event.key === 'Enter') login()">
+      <button class="btn-entrar" onclick="login()">Entrar</button>
+      <button class="btn-registro" onclick="registro()">Crear cuenta</button>
+      <button type="button" onclick="abrirRecuperar()" style="background:none; border: none; color: #1CB0F6; font-size: 14px; cursor: pointer; margin-top: 10px; text-decoration: underline;">¿Olvidaste tu contraseña?</button>
+    </div>
+    
+    <div class="decoracion-derecha">🎮  💃 🎤</div>
+  </div>
+    <!-- APP CON MENÚ DE PERFIL -->
+  <div id="app" style="display:none">
+    <!-- Botón de perfil en esquina superior derecha -->
+    <div style="position:fixed; top:20px; right:20px; z-index:1000;">
+      <button id="btnPerfil" onclick="toggleMenuPerfil()" style="display:flex; align-items:center; gap:8px; padding:10px 18px; border-radius:25px; background:#58CC02; color:white; border:none; font-size:15px; font-weight:bold; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.3);">
+        <span style="font-size:18px;">👤</span>
+        <span>Perfil</span>
+      </button>
+      
+      <!-- Menú desplegable -->
+      <div id="menuPerfil" style="display:none; position:absolute; top:60px; right:0; background:white; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.2); min-width:200px; overflow:hidden;">
+        <div style="padding:15px; background:#f5f5f5; border-bottom:1px solid #e5e5e5;">
+          <div style="font-weight:bold; color:#1B1035;">👤 <span id="nombreUserMenu"></span></div>
+        </div>
+        <button onclick="verHistorial(); toggleMenuPerfil();" style="width:100%; padding:12px 15px; background:white; border:none; text-align:left; cursor:pointer; font-size:14px; color:#1B1035;">
+          📊 Ver mi historial
+        </button>
+        <button onclick="cerrarSesion()" style="width:100%; padding:12px 15px; background:white; border:none; text-align:left; cursor:pointer; font-size:14px; color:#E74C3C; border-top:1px solid #e5e5e5;">
+          🚪 Cerrar sesión
+        </button>
+      </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div style="margin-top:80px;">
+      <h1 style="text-align:center; color:white; font-size:2rem; margin-bottom:10px;">🦉 ¡Hola, <span id="nombreUser"></span>!</h1>
+      <p style="text-align:center; color:white; font-size:1.1rem; margin-bottom:30px;">¿Qué quieres hacer hoy?</p>
+    </div>
+  </div>
+    
+    <!-- AQUÍ VA TODO TU JUEGO ACTUAL -->
+    
+
+  <div class="mancha mancha1"></div>
+  <div class="mancha mancha2"></div>
+
+  <!-- ============================================================
+       PANTALLA 1: MENÚ PARA ELEGIR EL MODO DE APRENDIZAJE
+       ============================================================ -->
+  <div id="pantallaMenu">
+    <h1>🗂️ How do you want to practice today?</h1>
+
+    <div class="selector-dificultad" style="display: flex; justify-content: center; gap: 12px; margin: 15px 0 25px 0; width: 100%;">
+      <button class="btn-dif" onclick="seleccionarDificultad('facil', this)" style="padding: 10px 20px; border-radius: 12px; border: 2px solid #E5E5E5; background: white; cursor: pointer; font-weight: bold; font-size: 15px;">🟢 Fácil</button>
+      <button class="btn-dif" onclick="seleccionarDificultad('medio', this)" style="padding: 10px 20px; border-radius: 12px; border: 2px solid #E5E5E5; background: white; cursor: pointer; font-weight: bold; font-size: 15px;">🟡 Medio</button>
+      <button class="btn-dif" onclick="seleccionarDificultad('dificil', this)" style="padding: 10px 20px; border-radius: 12px; border: 2px solid #E5E5E5; background: white; cursor: pointer; font-weight: bold; font-size: 15px;">🔴 Difícil</button>
+    </div>
+
+    <div class="menu-modos">
+
+      <button class="tarjeta-modo" data-modo="submenu-verbos">
+        <span class="emoji-modo">🌟</span>
+        <div class="titulo-modo">Write, Listen and Speak</div>
+        <div class="desc-modo">Practice words with pictures: write, choose, listen and speak.</div>
+      </button>
+
+      <button class="tarjeta-modo" data-modo="preguntas">
+        <span class="emoji-modo">❓</span>
+        <div class="titulo-modo">Questions &amp; Answers</div>
+        <div class="desc-modo">Read the question and choose the correct answer.</div>
+      </button>
+
+      <button class="tarjeta-modo" data-modo="oraciones">
+        <span class="emoji-modo">📝</span>
+        <div class="titulo-modo">Build sentences</div>
+        <div class="desc-modo">Build the correct sentence by tapping the words in the right order.</div>
+      </button>
+
+      <button class="tarjeta-modo" data-modo="frases">
+        <span class="emoji-modo">💬</span>
+        <div class="titulo-modo">Frases de uso frecuente</div>
+        <div class="desc-modo">Build, write, listen to and say the most common phrases.</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SUBMENÚ: opciones de "Write, Listen and Speak" (los verbos con dibujos)
+       ============================================================ -->
+  <div id="pantallaMenuVerbos" class="oculto">
+    <button class="btn-menu" id="btnVolverPrincipal">⬅ Back</button>
+    <h1>🌟 Write, Listen and Speak</h1>
+
+    <div class="menu-modos">
+
+      <button class="tarjeta-modo" data-modo="completo">
+        <span class="emoji-modo">🌟</span>
+        <div class="titulo-modo">Write, Listen and Speak</div>
+        <div class="desc-modo">For each picture: write the word, listen to it, then say it out loud.</div>
+      </button>
+
+      <button class="tarjeta-modo" data-modo="escribir">
+        <span class="emoji-modo">✍️</span>
+        <div class="titulo-modo">Write the word</div>
+        <div class="desc-modo">Look at the picture and write the word in English.</div>
+      </button>
+
+      <button class="tarjeta-modo" data-modo="elegir">
+        <span class="emoji-modo">🔤</span>
+        <div class="titulo-modo">Choose the right word</div>
+        <div class="desc-modo">Look at the picture and choose the right word.</div>
+      </button>
+
+      <button class="tarjeta-modo" data-modo="escuchar">
+        <span class="emoji-modo">🎧</span>
+        <div class="titulo-modo">Listen and write</div>
+        <div class="desc-modo">Listen to the word and write it.</div>
+      </button>
+
+      <button class="tarjeta-modo" data-modo="hablar">
+        <span class="emoji-modo">🎤</span>
+        <div class="titulo-modo">Speak</div>
+        <div class="desc-modo">Look at the picture and say the word in English out loud.</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       PANTALLA DE NIVEL (Flash Cards): primero se elige qué practicar y el nivel
+       ============================================================ -->
+  <div id="pantallaNivel" class="oculto">
+    <button class="btn-menu" id="btnVolverNivel">⬅ Back</button>
+    <h1 id="tituloNivel">Choose your level</h1>
+
+    <p class="texto-ayuda">1. What do you want to practice?</p>
+    <div class="fila-categorias" id="filaCategorias"></div>
+
+    <p class="texto-ayuda">2. Choose your level</p>
+    <div class="lista-niveles">
+      <button class="boton-nivel" data-nivel="facil">
+        <span class="nivel-emoji">🟢</span>
+        <span><b>Easy</b><br>Short words (up to 4 letters) and extra help.</span>
+      </button>
+      <button class="boton-nivel" data-nivel="medio">
+        <span class="nivel-emoji">🟡</span>
+        <span><b>Medium</b><br>Medium words (5 to 7 letters) and less help.</span>
+      </button>
+      <button class="boton-nivel" data-nivel="dificil">
+        <span class="nivel-emoji">🔴</span>
+        <span><b>Hard</b><br>Long words (8 letters or more) and no help.</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       BUILD SENTENCES: pantalla para elegir la categoría y la dificultad
+       ============================================================ -->
+  <div id="pantallaNivelOraciones" class="oculto">
+    <button class="btn-menu" id="btnVolverNivelOraciones">⬅ Back</button>
+    <h1>📝 Build sentences</h1>
+
+    <p class="texto-ayuda">1. What do you want to practice?</p>
+    <div class="fila-categorias" id="filaCategoriasOraciones"></div>
+    <p class="texto-ayuda" id="textoCantidadOraciones"></p>
+
+    <p class="texto-ayuda">2. Choose your level</p>
+    <div class="lista-niveles">
+      <button class="boton-nivel-oraciones" data-nivel="facil">
+        <span class="nivel-emoji">🟢</span>
+        <span><b>Easy</b><br>Short sentences (3 to 5 words).</span>
+      </button>
+      <button class="boton-nivel-oraciones" data-nivel="medio">
+        <span class="nivel-emoji">🟡</span>
+        <span><b>Medium</b><br>Longer sentences (5 to 7 words).</span>
+      </button>
+      <button class="boton-nivel-oraciones" data-nivel="dificil">
+        <span class="nivel-emoji">🔴</span>
+        <span><b>Hard</b><br>Long sentences (7 words or more).</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       PANTALLA 2: EL JUEGO EN CURSO (se adapta según el modo)
+       ============================================================ -->
+  <div id="juegoEnCurso" class="oculto">
+    <button class="btn-menu" id="btnVolverMenu">🏠 Choose another mode</button>
+    <button class="btn-menu btn-pausa" id="btnPausa">⏸️ Pausar y Guardar</button>
+    <div class="marcador">
+      <div class="chip" id="chipPregunta">Question 1/16</div>
+      <div class="chip" id="chipPuntos">⭐ 0 points</div>
+      <div class="chip" id="chipRacha">🔥 Streak: 0</div>
+      <div class="chip oculto" id="chipNivel"></div>
+    </div>
+
+    <div class="carrusel">
+      <div class="tarjeta-lateral">
+        <img id="imagenAnterior" src="" alt="Previous verb">
+      </div>
+
+      <div class="tarjeta-actual">
+        <img id="imagenActual" src="" alt="Guess this verb">
+        <div class="consigna oculto" id="consigna"></div>
+      </div>
+
+      <div class="tarjeta-lateral">
+        <img id="imagenSiguiente" src="" alt="Next verb">
+      </div>
+    </div>
+
+    <!-- Se usa en el modo "escuchar": botones para oír el verbo -->
+    <div class="zona-audio oculto" id="zonaAudio">
+      <button class="boton" id="btnOirNormal">🔊 Listen</button>
+      <button class="boton boton-secundario" id="btnOirLento">🐢 Slower</button>
+    </div>
+
+    <!-- Se usa en los modos "escribir", "conjugar" y "escuchar" -->
+    <div class="zona-respuesta oculto" id="zonaTexto">
+      <input type="text" id="respuestaInput" placeholder="Type here..." autocomplete="off">
+      <button class="boton" id="btnVerificarTexto">Check ✅</button>
+    </div>
+
+    <!-- Se usa en el modo "elegir" -->
+    <div class="opciones oculto" id="zonaOpciones"></div>
+
+    <!-- Se usa en el modo "oraciones" -->
+    <div class="constructor-oracion oculto" id="zonaOraciones">
+      <div class="franja-respuesta" id="franjaRespuesta"></div>
+      <div class="banco-fichas" id="bancoFichas"></div>
+      <button class="boton btn-comprobar" id="btnVerificarOracion">Check ✅</button>
+      <!-- Cuando la oración está armada: se enciende el micrófono para decirla -->
+      <div class="zona-hablar oculto" id="zonaHablarOracion">
+        <button class="boton boton-mic" id="btnMicOracion">🎤 Tap and say the sentence</button>
+        <button class="boton oculto" id="btnSiguienteOracion">Next sentence ➡</button>
+      </div>
+    </div>
+
+    <!-- Se usa en el modo "hablar": micrófono -->
+    <div class="zona-hablar oculto" id="zonaHablar">
+      <button class="boton boton-mic" id="btnMic">🎤 Tap and say the verb</button>
+      
+    </div>
+
+    <!-- Modo "completo": botón para pasar al siguiente paso -->
+    <div class="zona-hablar oculto" id="zonaPaso">
+      <button class="boton" id="btnPaso">Next ➡</button>
+    </div>
+
+    <div class="mensaje" id="mensaje"></div>
+  </div>
+
+  <!-- ============================================================
+       PANTALLA 3: RESUMEN FINAL + GALERÍA PREMIO
+       ============================================================ -->
+  <div id="juegoFinal" class="oculto">
+    <div class="pantalla-final">
+      <h2>🎉 Round finished!</h2>
+      <p id="resultadoTexto">Score: 0</p>
+      <p id="mejorRachaTexto">Best streak saved: 0</p>
+      <div class="galeria" id="galeria"></div>
+      <div class="botones-final">
+        <button class="boton" id="btnJugarDeNuevo">🔁 Play again</button>
+        <button class="boton" id="btnElegirOtroModo">🗂️ Choose another mode</button>
+      </div>
+    </div>
+  </div>
+
+    <!-- MODAL GENÉRICO (para reemplazar alerts y confirms) -->
+  <div id="modalGenerico" class="oculto" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:10000; display:flex; align-items:center; justify-content:center;">
+    <div style="background:white; border-radius:20px; padding:30px; max-width:420px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.5); text-align:center;">
+      <h3 id="modalTitulo" style="color:#1B1035; margin-top:0; font-size:22px;"></h3>
+      <p id="modalMensaje" style="color:#555; font-size:16px; line-height:1.5; margin:15px 0;"></p>
+      <div id="modalBotones" style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+        <!-- Los botones se generan dinámicamente -->
+      </div>
+    </div>
+  </div>
+
+  <!-- PALABRA SECRETA AL CREAR CUENTA (MODAL) -->
+  <div id="pantallaSecreta" class="oculto" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; display:flex; align-items:center; justify-content:center;">
+    <div style="background:white; border-radius:20px; padding:30px; max-width:420px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.5); text-align:center;">
+      <h2 style="color:#58CC02; margin-top:0;">🔑 Elige tu palabra secreta</h2>
+      <p style="color:#555; font-size:15px;">Te la pediremos si olvidas tu contraseña. Recuérdala bien.</p>
+      <input type="text" id="regSecreta" placeholder="🔑 Palabra secreta" onkeypress="if(event.key === 'Enter') confirmarRegistro()" style="width:100%; box-sizing:border-box; padding:12px; margin:6px 0; border:2px solid #E5E5E5; border-radius:12px; font-size:15px;">
+      <div style="display:flex; gap:10px; margin-top:15px;">
+        <button onclick="cerrarSecreta()" style="flex:1; padding:12px; background:#E5E5E5; color:#1B1035; border:none; border-radius:12px; font-size:15px; font-weight:bold; cursor:pointer;">Cancelar</button>
+        <button onclick="confirmarRegistro()" style="flex:1; padding:12px; background:#58CC02; color:white; border:none; border-radius:12px; font-size:15px; font-weight:bold; cursor:pointer;">Crear cuenta</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECUPERAR CONTRASEÑA (MODAL) -->
+  <div id="pantallaRecuperar" class="oculto" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; display:flex; align-items:center; justify-content:center;">
+    <div style="background:white; border-radius:20px; padding:30px; max-width:420px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.5); text-align:center;">
+      <h2 style="color:#58CC02; margin-top:0;">🔑 Recuperar contraseña</h2>
+      <p style="color:#555; font-size:15px;">Escribe tu usuario, tu palabra secreta y la nueva contraseña.</p>
+      <input type="text" id="recUser" placeholder="👤 Usuario" style="width:100%; box-sizing:border-box; padding:12px; margin:6px 0; border:2px solid #E5E5E5; border-radius:12px; font-size:15px;">
+      <input type="text" id="recSecreta" placeholder="🔑 Palabra secreta" style="width:100%; box-sizing:border-box; padding:12px; margin:6px 0; border:2px solid #E5E5E5; border-radius:12px; font-size:15px;">
+      <input type="password" id="recNueva" placeholder="🔒 Nueva contraseña" onkeypress="if(event.key === 'Enter') cambiarContrasena()" style="width:100%; box-sizing:border-box; padding:12px; margin:6px 0; border:2px solid #E5E5E5; border-radius:12px; font-size:15px;">
+      <div style="display:flex; gap:10px; margin-top:15px;">
+        <button onclick="cerrarRecuperar()" style="flex:1; padding:12px; background:#E5E5E5; color:#1B1035; border:none; border-radius:12px; font-size:15px; font-weight:bold; cursor:pointer;">Cancelar</button>
+        <button onclick="cambiarContrasena()" style="flex:1; padding:12px; background:#58CC02; color:white; border:none; border-radius:12px; font-size:15px; font-weight:bold; cursor:pointer;">Cambiar</button>
+      </div>
+    </div>
+  </div>
+  
+    <!-- PANTALLA DE HISTORIAL (MODAL) -->
+  <div id="pantallaHistorial" class="oculto" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; display:flex; align-items:center; justify-content:center;">
+    <div style="background:white; border-radius:20px; padding:30px; max-width:500px; width:90%; max-height:80vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+      <h2 style="color:#58CC02; margin-top:0; text-align:center;">📊 Historial de <span id="historialUser"></span></h2>
+      <div id="listaHistorial" style="margin:20px 0;">
+        <!-- Aquí se insertan los registros -->
+      </div>
+      <button onclick="cerrarHistorial()" style="width:100%; padding:15px; background:#58CC02; color:white; border:none; border-radius:12px; font-size:16px; font-weight:bold; cursor:pointer; margin-top:20px; box-shadow:0 4px 0 #46a302;">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Código (el orden importa: primero los datos, el juego al final) -->
+  <script src="js/datos.js"></script>
+  <script src="js/vocabulario.js"></script>
+  <script src="js/usuarios.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/juego.js"></script>
+</body>
+</html>
