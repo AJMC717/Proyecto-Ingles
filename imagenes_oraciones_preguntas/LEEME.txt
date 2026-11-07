@@ -1,2 +1,0 @@
-Carpeta para las imagenes de "Build sentences" (oraciones) y "Questions and Answers" (preguntas y respuestas).
-Pon aqui las imagenes (formato .jpeg). Todavia no estan conectadas al juego.
