@@ -94,9 +94,9 @@
         <div class="desc-modo">Build the correct sentence by tapping the words in the right order.</div>
       </button>
 
-      <button class="tarjeta-modo" data-modo="frases">
+      <button class="tarjeta-modo" data-modo="submenu-frases">
         <span class="emoji-modo">💬</span>
-        <div class="titulo-modo">Frases de uso frecuente</div>
+        <div class="titulo-modo">Frequent phrases</div>
         <div class="desc-modo">Build, write, listen to and say the most common phrases.</div>
       </button>
     </div>
@@ -194,6 +194,34 @@
       <button class="boton-nivel-oraciones" data-nivel="dificil">
         <span class="nivel-emoji">🔴</span>
         <span><b>Hard</b><br>Long sentences (7 words or more).</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       FRASES: pantalla para elegir la categoría y el nivel
+       ============================================================ -->
+  <div id="pantallaFrases" class="oculto">
+    <button class="btn-menu" id="btnVolverFrases">⬅ Back</button>
+    <h1>💬 Frequent phrases</h1>
+
+    <p class="texto-ayuda">1. What do you want to practice?</p>
+    <div class="fila-categorias" id="filaCategoriasFrases"></div>
+    <p class="texto-ayuda" id="textoCantidadFrases"></p>
+
+    <p class="texto-ayuda">2. Choose your level</p>
+    <div class="lista-niveles">
+      <button class="boton-nivel-frases" data-nivel="facil">
+        <span class="nivel-emoji">🟢</span>
+        <span><b>Easy</b><br>Short phrases (2 to 3 words).</span>
+      </button>
+      <button class="boton-nivel-frases" data-nivel="medio">
+        <span class="nivel-emoji">🟡</span>
+        <span><b>Medium</b><br>Longer phrases (4 to 6 words).</span>
+      </button>
+      <button class="boton-nivel-frases" data-nivel="dificil">
+        <span class="nivel-emoji">🔴</span>
+        <span><b>Hard</b><br>Long phrases (7 words or more).</span>
       </button>
     </div>
   </div>
