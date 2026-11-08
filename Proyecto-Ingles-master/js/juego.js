@@ -156,6 +156,10 @@ function seleccionarDificultad(nivel, btn) {
           racha = estadoGuardado.racha;
           preguntas = estadoGuardado.preguntas;
           if (modo === "completo") pasoCompleto = estadoGuardado.pasoCompleto || 1;
+          if (modo === "frases") {
+            if (estadoGuardado.categoriaFrases) categoriaFrases = estadoGuardado.categoriaFrases;
+            if (estadoGuardado.nivelFrases) nivelFrases = estadoGuardado.nivelFrases;
+          }
           mostrarInterfazJuego();
           mostrarPregunta();
         },
@@ -213,6 +217,7 @@ function seleccionarDificultad(nivel, btn) {
     document.getElementById("zonaAudio").classList.toggle("oculto", modoActual !== "escuchar");
     document.getElementById("zonaHablar").classList.toggle("oculto", modoActual !== "hablar");
     document.querySelector(".carrusel").classList.toggle("solo-audio", modoActual === "escuchar" && nivelFlash !== "facil");
+    document.querySelector(".carrusel").classList.toggle("carrusel-frases", modoActual === "frases"); // tamaño de imagen solo para Frases
     document.getElementById("zonaPaso").classList.add("oculto");
     document.getElementById("zonaOpciones").classList.toggle("oculto", modoActual !== "elegir" && modoActual !== "preguntas");
     document.getElementById("zonaOraciones").classList.toggle("oculto", modoActual !== "oraciones");
@@ -764,6 +769,10 @@ function seleccionarDificultad(nivel, btn) {
     if (MODOS_VERBOS.includes(modo)) {
       return 'estado_flash_' + user + '|' + modo + '|' + categoriaFlash + '|' + nivelFlash;
     }
+    // Frases: cada categoría + nivel tiene su propia partida (igual que Flash Cards)
+    if (modo === "frases") {
+      return 'estado_frases_' + user + '|' + categoriaFrases + '|' + nivelFrases;
+    }
     return 'estado_juego_' + user;
   }
   function guardarEstadoJuego() {
@@ -778,6 +787,10 @@ function seleccionarDificultad(nivel, btn) {
       preguntas: preguntas, // Guarda el orden exacto de las preguntas
       pasoCompleto: pasoCompleto
     };
+    if (modoActual === "frases") {
+      estado.categoriaFrases = categoriaFrases;
+      estado.nivelFrases = nivelFrases;
+    }
     localStorage.setItem(claveGuardado(modoActual), JSON.stringify(estado));
     mostrarAlerta('⏸️ Juego pausado', '✅ Tu progreso fue guardado correctamente.<br><br>Puedes salir y continuar cuando quieras.');
     volverAlMenu();
@@ -867,8 +880,8 @@ function seleccionarDificultad(nivel, btn) {
       if (MODOS_VERBOS.includes(modo)) { abrirPantallaNivel(modo); return; }
       // Build sentences: primero se elige la categoría y la dificultad
       if (modo === "oraciones") { abrirPantallaNivelOraciones(); return; }
-      // Frases: pedimos el micrófono antes de empezar
-      if (modo === "frases") { pedirMicrofono(function () { iniciarModo(modo); }); return; }
+      // Frases: primero se elige la categoría y el nivel
+      if (modo === "submenu-frases") { abrirPantallaFrases(); return; }
       iniciarModo(modo);
     });
   });
@@ -1010,22 +1023,93 @@ function seleccionarDificultad(nivel, btn) {
   }
 
   /* ============================================================
-     MODO "FRASES DE USO FRECUENTE": 4 pasos por frase
-     Paso 1: armar la frase con fichas -> Paso 2: escribirla
-     Paso 3: escucharla -> Paso 4: decirla (y pasa a la siguiente frase)
+     FRASES DE USO FRECUENTE
+     Parte 1: pantalla para elegir la categoría y el nivel
+     Parte 2: los 4 pasos de cada frase (armar, escribir, escuchar y decir)
+     Los datos están en datos.js (CATEGORIAS_FRASES y frasesPorCategoria).
      ============================================================ */
+
+  /* ---------- Parte 1: categoría y nivel ---------- */
+  let categoriaFrases = "saludos";   // categoría elegida (id de CATEGORIAS_FRASES)
+  let nivelFrases = "facil";         // nivel elegido: facil, medio o dificil
+
+  // Muestra la pantalla de categoría y nivel
+  function abrirPantallaFrases() {
+    dibujarCategoriasFrases();
+    document.getElementById("pantallaMenu").classList.add("oculto");
+    document.getElementById("app").classList.add("oculto");
+    document.getElementById("pantallaFrases").classList.remove("oculto");
+  }
+
+  // Dibuja los botones de categoría y marca el elegido
+  function dibujarCategoriasFrases() {
+    const fila = document.getElementById("filaCategoriasFrases");
+    fila.innerHTML = "";
+    for (let i = 0; i < CATEGORIAS_FRASES.length; i++) {
+      const categoria = CATEGORIAS_FRASES[i];
+      const boton = document.createElement("button");
+      boton.className = "chip-categoria";
+      if (categoria.id === categoriaFrases) boton.className += " activa";
+      boton.textContent = categoria.emoji + " " + categoria.nombre;
+      boton.addEventListener("click", function () {
+        categoriaFrases = categoria.id;
+        dibujarCategoriasFrases();
+      });
+      fila.appendChild(boton);
+    }
+    document.getElementById("textoCantidadFrases").textContent =
+      categoriaFrases === "mix" ? "🎲 Mix: 10 random phrases from all the categories" : "10 phrases per level";
+  }
+
+  // Devuelve las frases de una categoría y un nivel.
+  // Mix = 10 frases al azar, tomadas de todas las categorías en ese nivel.
+  function listaDeFrases(categoria, nivel) {
+    if (categoria === "mix") {
+      let todas = [];
+      for (const id in frasesPorCategoria) {
+        todas = todas.concat(frasesPorCategoria[id][nivel] || []);
+      }
+      return mezclar(todas).slice(0, 10);
+    }
+    const datosCategoria = frasesPorCategoria[categoria] || {};
+    return datosCategoria[nivel] || [];
+  }
+
+  // Al tocar un nivel empieza el juego (se pide el micrófono antes)
+  document.querySelectorAll(".boton-nivel-frases").forEach(function (boton) {
+    boton.addEventListener("click", function () {
+      nivelFrases = boton.dataset.nivel;
+      if (listaDeFrases(categoriaFrases, nivelFrases).length === 0) {
+        mostrarAlerta("Aún no hay contenido", "🚧 Este nivel todavía no tiene frases.");
+        return;
+      }
+      document.getElementById("pantallaFrases").classList.add("oculto");
+      pedirMicrofono(function () { iniciarModo("frases"); });
+    });
+  });
+
+  document.getElementById("btnVolverFrases").addEventListener("click", function () {
+    document.getElementById("pantallaFrases").classList.add("oculto");
+    mostrarMenuPrincipal();
+  });
+
+  /* ---------- Parte 2: los 4 pasos de cada frase ----------
+     Paso 1: armar la frase con fichas -> Paso 2: escribirla
+     Paso 3: escucharla -> Paso 4: decirla (y pasa a la siguiente frase) */
   let pasoFrase = 1;
 
+  // Compara sin mayúsculas ni signos (¿ ? ¡ ! . ,)
   function normalizarFrase(texto) {
     return texto.toLowerCase().replace(/[¿?¡!.,]/g, "").replace(/\s+/g, " ").trim();
   }
 
+  // Arma la lista de preguntas de la ronda con las frases de la categoría y el nivel
   function generarPreguntasDeFrases() {
-    const lista = datosFrases[dificultadActual] || [];
+    const lista = listaDeFrases(categoriaFrases, nivelFrases);
     return mezclar(lista).map((item, idx) => ({
       verboIdx: idx,
-      img: rutaImagenFrase(item.img),
-      imgRespaldo: imagenRespaldoFrase(item.icono),
+      img: item.img ? rutaImagenFrase(item.img) : imagenRespaldoFrase(item.emoji),
+      imgRespaldo: imagenRespaldoFrase(item.emoji),
       oracionCorrecta: item.texto,    // paso 1 (armar)
       respuestaCorrecta: item.texto,  // pasos 2, 3 y 4 (escribir, escuchar, hablar)
       traduccion: item.es,

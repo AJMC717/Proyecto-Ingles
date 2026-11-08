@@ -261,7 +261,7 @@
     const clavesFlash = [];
     for (let i = 0; i < localStorage.length; i++) {
       const clave = localStorage.key(i);
-      if (clave.indexOf('estado_flash_' + user + '|') === 0) clavesFlash.push(clave);
+      if (clave.indexOf('estado_flash_' + user + '|') === 0 || clave.indexOf('estado_frases_' + user + '|') === 0) clavesFlash.push(clave);
     }
     for (let i = 0; i < clavesFlash.length; i++) {
       localStorage.removeItem(clavesFlash[i]);
