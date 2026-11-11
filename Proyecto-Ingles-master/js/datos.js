@@ -16,22 +16,22 @@
   }
 
   const verbos = [
-  { nombre: "Play", img: rutaImagen("Play"), past: "played", pres: "play", pres3: "plays", fut: "will play" },
-  { nombre: "Eat", img: rutaImagen("Eat"), past: "ate", pres: "eat", pres3: "eats", fut: "will eat" },
-  { nombre: "Read", img: rutaImagen("Read"), past: "read", pres: "read", pres3: "reads", fut: "will read" },
-  { nombre: "Sing", img: rutaImagen("Sing"), past: "sang", pres: "sing", pres3: "sings", fut: "will sing" },
-  { nombre: "Write", img: rutaImagen("Write"), past: "wrote", pres: "write", pres3: "writes", fut: "will write" },
-  { nombre: "Sleep", img: rutaImagen("Sleep"), past: "slept", pres: "sleep", pres3: "sleeps", fut: "will sleep" },
-  { nombre: "Run", img: rutaImagen("Run"), past: "ran", pres: "run", pres3: "runs", fut: "will run" },
-  { nombre: "Talk", img: rutaImagen("Talk"), past: "talked", pres: "talk", pres3: "talks", fut: "will talk" },
-  { nombre: "Dance", img: rutaImagen("Dance"), past: "danced", pres: "dance", pres3: "dances", fut: "will dance" },
-  { nombre: "Listen", img: rutaImagen("Listen"), past: "listened", pres: "listen", pres3: "listens", fut: "will listen" },
-  { nombre: "Speak", img: rutaImagen("Speak"), past: "spoke", pres: "speak", pres3: "speaks", fut: "will speak" },
-  { nombre: "Ask", img: rutaImagen("Ask"), past: "asked", pres: "ask", pres3: "asks", fut: "will ask" },
-  { nombre: "Answer", img: rutaImagen("Answer"), past: "answered", pres: "answer", pres3: "answers", fut: "will answer" },
-  { nombre: "Learn", img: rutaImagen("Learn"), past: "learned", pres: "learn", pres3: "learns", fut: "will learn" },
-  { nombre: "Teach", img: rutaImagen("Teach"), past: "taught", pres: "teach", pres3: "teaches", fut: "will teach" },
-  { nombre: "Practice", img: rutaImagen("Practice"), past: "practiced", pres: "practice", pres3: "practices", fut: "will practice" }
+    { nombre: "Play", es: "jugar", img: rutaImagen("Play"), past: "played", pres: "play", pres3: "plays", fut: "will play" },
+    { nombre: "Eat", es: "comer", img: rutaImagen("Eat"), past: "ate", pres: "eat", pres3: "eats", fut: "will eat" },
+    { nombre: "Read", es: "leer", img: rutaImagen("Read"), past: "read", pres: "read", pres3: "reads", fut: "will read" },
+    { nombre: "Sing", es: "cantar", img: rutaImagen("Sing"), past: "sang", pres: "sing", pres3: "sings", fut: "will sing" },
+    { nombre: "Write", es: "escribir", img: rutaImagen("Write"), past: "wrote", pres: "write", pres3: "writes", fut: "will write" },
+    { nombre: "Sleep", es: "dormir", img: rutaImagen("Sleep"), past: "slept", pres: "sleep", pres3: "sleeps", fut: "will sleep" },
+    { nombre: "Run", es: "correr", img: rutaImagen("Run"), past: "ran", pres: "run", pres3: "runs", fut: "will run" },
+    { nombre: "Talk", es: "hablar", img: rutaImagen("Talk"), past: "talked", pres: "talk", pres3: "talks", fut: "will talk" },
+    { nombre: "Dance", es: "bailar", img: rutaImagen("Dance"), past: "danced", pres: "dance", pres3: "dances", fut: "will dance" },
+    { nombre: "Listen", es: "escuchar", img: rutaImagen("Listen"), past: "listened", pres: "listen", pres3: "listens", fut: "will listen" },
+    { nombre: "Speak", es: "hablar", img: rutaImagen("Speak"), past: "spoke", pres: "speak", pres3: "speaks", fut: "will speak" },
+    { nombre: "Ask", es: "preguntar", img: rutaImagen("Ask"), past: "asked", pres: "ask", pres3: "asks", fut: "will ask" },
+    { nombre: "Answer", es: "responder", img: rutaImagen("Answer"), past: "answered", pres: "answer", pres3: "answers", fut: "will answer" },
+    { nombre: "Learn", es: "aprender", img: rutaImagen("Learn"), past: "learned", pres: "learn", pres3: "learns", fut: "will learn" },
+    { nombre: "Teach", es: "enseñar", img: rutaImagen("Teach"), past: "taught", pres: "teach", pres3: "teaches", fut: "will teach" },
+    { nombre: "Practice", es: "practicar", img: rutaImagen("Practice"), past: "practiced", pres: "practice", pres3: "practices", fut: "will practice" }
   ];
 
   // Pronombre según quién aparece en la imagen de cada verbo (cámbialo si no coincide)

@@ -122,15 +122,102 @@ function seleccionarDificultad(nivel, btn) {
      PASO 4: arrancar un modo de juego
      ============================================================ */
   function generarPreguntasDePreguntas() {
-  const lista = datosPreguntas[dificultadActual] || datosPreguntas.facil;
-  return mezclar(lista).map((item, idx) => ({
-    verboIdx: idx,
-    img: verbos[idx % verbos.length].img,
-    preguntaTexto: item.pregunta,
-    opciones: item.opciones,
-    respuestaCorrecta: item.opciones[item.correcta]
-  }));
-}
+    const lista = [];
+    const verbosMezclados = mezclar(verbos);
+    const totalPreguntas = 16; // 8 de Tipo A, 8 de Tipo B
+
+    // Banco de preguntas variadas para Tipo B
+    const preguntasTipoB = [
+      { pregunta: (p, v) => `What is ${p.toLowerCase()} doing?`, respuesta: (p, v) => `${p} is ${v.nombre.toLowerCase()}ing.` },
+      { pregunta: (p, v) => `What does ${p.toLowerCase()} do?`, respuesta: (p, v) => `${p} ${v.nombre.toLowerCase()}s.` },
+      { pregunta: (p, v) => `"${p} is ${v.nombre.toLowerCase()}ing." What is the correct question?`, respuesta: (p, v) => `What is ${p.toLowerCase()} doing?` },
+      { pregunta: (p, v) => `Look at ${p.toLowerCase()}. What action is ${p.toLowerCase()} doing?`, respuesta: (p, v) => `${v.nombre}` },
+      { pregunta: (p, v) => `"${p} likes to ${v.nombre.toLowerCase()}." What is the verb?`, respuesta: (p, v) => `${v.nombre}` },
+      { pregunta: (p, v) => `What is happening in the picture?`, respuesta: (p, v) => `${p} is ${v.nombre.toLowerCase()}ing.` },
+      { pregunta: (p, v) => `Choose the correct verb for this image:`, respuesta: (p, v) => `${v.nombre}` },
+      { pregunta: (p, v) => `"${p} is having fun." What is ${p.toLowerCase()} doing?`, respuesta: (p, v) => `${v.nombre}` }
+    ];
+
+    for (let i = 0; i < totalPreguntas; i++) {
+      const verbo = verbosMezclados[i % verbosMezclados.length];
+      const pronombre = pronombrePorVerbo[verbo.nombre] || "She";
+      const esTipoA = i % 2 === 0; // Alterna: A, B, A, B...
+
+      let pregunta = {
+        verboIdx: i,
+        img: verbo.img,
+        tipo: esTipoA ? "A" : "B",
+        verboData: verbo,
+        pronombre: pronombre
+      };
+
+      if (dificultadActual === "facil") {
+        if (esTipoA) {
+          // TIPO A: Imagen + pregunta → elegir verbo
+          pregunta.consigna = `What is ${pronombre.toLowerCase()} doing?`;
+          pregunta.respuestaCorrecta = verbo.nombre;
+          pregunta.opciones = armarOpcionesQA(verbo.nombre, verbos.map(v => v.nombre));
+        } else {
+          // TIPO B: Variamos las preguntas usando el banco
+          const preguntaB = preguntasTipoB[i % preguntasTipoB.length];
+          pregunta.consigna = preguntaB.pregunta(pronombre, verbo);
+          pregunta.respuestaCorrecta = preguntaB.respuesta(pronombre, verbo);
+          
+          // Generamos opciones variadas para Tipo B
+          if (pregunta.respuestaCorrecta.includes(" ")) {
+            // Si la respuesta es una frase completa, usamos otras frases como distractoras
+            pregunta.opciones = mezclar([
+              pregunta.respuestaCorrecta,
+              `${pronombre} is playing.`,
+              `${pronombre} is eating.`,
+              `${pronombre} is sleeping.`
+            ]);
+          } else {
+            // Si es solo el verbo, usamos verbos como opciones
+            pregunta.opciones = armarOpcionesQA(verbo.nombre, verbos.map(v => v.nombre));
+          }
+        }
+      } 
+      else if (dificultadActual === "medio") {
+        pregunta.tipoRespuesta = "escribir";
+        if (esTipoA) {
+          pregunta.consigna = `What is ${pronombre.toLowerCase()} doing?`;
+          pregunta.respuestaCorrecta = verbo.nombre;
+        } else {
+          // Tipo B en medio: escribir la pregunta
+          pregunta.consigna = `Answer: "${pronombre} is ${verbo.nombre.toLowerCase()}ing."<br><br>Write the correct question:`;
+          pregunta.respuestaCorrecta = `What is ${pronombre.toLowerCase()} doing?`;
+        }
+      } 
+      else if (dificultadActual === "dificil") {
+        pregunta.tipoRespuesta = "escribir";
+        pregunta.imgSutil = true;
+        if (esTipoA) {
+          pregunta.consigna = `¿Cómo se dice "<b>${verbo.es}</b>" en inglés?`;
+          pregunta.respuestaCorrecta = verbo.nombre;
+        } else {
+          pregunta.consigna = `¿Cómo se pregunta "<b>¿Qué está haciendo ${pronombre.toLowerCase()}?</b>" en inglés?`;
+          pregunta.respuestaCorrecta = `What is ${pronombre.toLowerCase()} doing?`;
+        }
+      }
+      lista.push(pregunta);
+    }
+    return mezclar(lista);
+  }    
+    function armarOpcionesQA(correcta, todas) {
+    // Filtramos para quitar la correcta de la lista "todas"
+    const otras = mezclar(todas.filter(v => v !== correcta));
+    const opciones = [correcta];
+    
+    // Agregamos hasta 3 opciones incorrectas (sin repetir)
+    for (let i = 0; i < Math.min(3, otras.length); i++) {
+      if (!opciones.includes(otras[i])) {
+        opciones.push(otras[i]);
+      }
+    }
+    
+    return mezclar(opciones);
+  }
 
   function iniciarModo(modo) {
     const estadoGuardado = JSON.parse(localStorage.getItem(claveGuardado(modo)));
@@ -290,8 +377,31 @@ function seleccionarDificultad(nivel, btn) {
     } else if (modoActual === "completo") {
       irAPaso(1);
     } else if (modoActual === "preguntas") {
-      document.getElementById("consigna").textContent = q.preguntaTexto;
-      prepararZonaOpciones(q);
+      // Usamos innerHTML para que funcione el <br> y <b> de las consignas
+      document.getElementById("consigna").innerHTML = q.consigna;
+      
+      if (q.tipoRespuesta === "escribir") {
+        document.getElementById("zonaTexto").classList.remove("oculto");
+        document.getElementById("zonaOpciones").classList.add("oculto");
+        inputRespuesta.placeholder = "Type your answer here...";
+        prepararZonaTexto();
+      } else {
+        document.getElementById("zonaTexto").classList.add("oculto");
+        document.getElementById("zonaOpciones").classList.remove("oculto");
+        prepararZonaOpciones(q);
+      }
+
+      // Efecto visual para el nivel Difícil (imagen sutil)
+      const imgActual = document.getElementById("imagenActual");
+      if (q.imgSutil) {
+        imgActual.style.opacity = "0.3";
+        imgActual.style.transform = "scale(0.6)";
+        imgActual.style.filter = "grayscale(80%)";
+      } else {
+        imgActual.style.opacity = "1";
+        imgActual.style.transform = "scale(1)";
+        imgActual.style.filter = "none";
+      }
     } else if (modoActual === "frases") {
       irAPasoFrase(1);
     }
@@ -312,12 +422,17 @@ function seleccionarDificultad(nivel, btn) {
     respondiendo = true;
 
     const q = preguntas[preguntaActual];
-    const escrito = inputRespuesta.value.trim().toLowerCase();
-    // En las frases se ignoran mayúsculas y signos (¿ ? ! . ,)
-    const esCorrecto = modoActual === "frases"
-      ? normalizarFrase(escrito) === normalizarFrase(q.respuestaCorrecta)
-      : escrito === q.respuestaCorrecta.toLowerCase();
+    const escrito = inputRespuesta.value.trim();
 
+    let esCorrecto = false;
+    if (modoActual === "frases") {
+      esCorrecto = normalizarFrase(escrito) === normalizarFrase(q.respuestaCorrecta);
+    } else if (modoActual === "preguntas") {
+      // Para preguntas, comparamos todo en minúsculas para ser justos
+      esCorrecto = escrito.toLowerCase() === q.respuestaCorrecta.toLowerCase();
+    } else {
+      esCorrecto = escrito.toLowerCase() === q.respuestaCorrecta.toLowerCase();
+    }
     // Si se equivoca, se queda en la misma pregunta y puede intentar otra vez
     if (!esCorrecto) {
       inputRespuesta.classList.add("incorrecta");
