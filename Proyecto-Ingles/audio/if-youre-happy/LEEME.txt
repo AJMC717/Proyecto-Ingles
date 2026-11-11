@@ -1,0 +1,11 @@
+Pistas de "If You're Happy and You Know It" para Easy - Song 1.
+
+Coloca aquí los archivos con estos nombres exactos:
+
+  linea1.mp3  -> If you're happy and you know it, clap your hands. (Clap-clap)
+  linea2.mp3  -> If you're happy and you know it, clap your hands. (Clap-clap)
+  linea3.mp3  -> If you're happy and you know it, then your face will surely show it.
+  linea4.mp3  -> If you're happy and you know it, clap your hands. (Clap-clap)
+
+Cada archivo debe contener solo el fragmento correspondiente a esa línea.
+La ronda 2 reutiliza los mismos 4 archivos.

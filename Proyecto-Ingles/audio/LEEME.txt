@@ -1,0 +1,34 @@
+Cada canción tiene su propia carpeta dentro de audio/.
+Cada dificultad tiene 3 espacios de canción; las que aún no existen
+se muestran como "Locked" o "Coming soon" en el catálogo.
+
+ESTRUCTURA:
+
+  audio/
+    if-youre-happy/     -> Easy - Song 1: If You're Happy and You Know It
+      linea1.mp3
+      linea2.mp3
+      linea3.mp3
+      linea4.mp3
+
+    viva-la-vida/       -> Medium - Song 1: Coldplay - Viva la Vida
+      linea1.mp3
+      linea2.mp3
+      linea3.mp3
+      linea4.mp3
+      linea5.mp3
+      linea6.mp3
+      linea7.mp3
+      linea8.mp3
+      linea9.mp3
+      linea10.mp3
+
+Cuando se agregue la Song 2 o Song 3 de una dificultad, crea su propia
+carpeta y usa los mismos nombres linea1.mp3, linea2.mp3, etc.
+
+Cada carpeta tiene su propio LEEME.txt con la letra que corresponde
+a cada archivo.
+
+El módulo "Listen, Sing and Speak" reproduce las pistas con new Audio().
+Si algún archivo no existe o el navegador no puede reproducirlo, se usa
+automáticamente la voz del navegador (speechSynthesis) como respaldo.

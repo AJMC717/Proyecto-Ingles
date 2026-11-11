@@ -258,13 +258,17 @@
     localStorage.removeItem('userActual');
     // Borra las partidas pausadas al salir (la de siempre y las de Flash Cards)
     localStorage.removeItem('estado_juego_' + user);
-    const clavesFlash = [];
+    const clavesTemporales = [];
     for (let i = 0; i < localStorage.length; i++) {
       const clave = localStorage.key(i);
-      if (clave.indexOf('estado_flash_' + user + '|') === 0 || clave.indexOf('estado_frases_' + user + '|') === 0) clavesFlash.push(clave);
+      if (clave.indexOf('estado_flash_' + user + '|') === 0 ||
+          clave.indexOf('estado_frases_' + user + '|') === 0 ||
+          clave.indexOf('estado_musica_' + user + '|') === 0) {
+        clavesTemporales.push(clave);
+      }
     }
-    for (let i = 0; i < clavesFlash.length; i++) {
-      localStorage.removeItem(clavesFlash[i]);
+    for (let i = 0; i < clavesTemporales.length; i++) {
+      localStorage.removeItem(clavesTemporales[i]);
     }
     location.reload();
   }

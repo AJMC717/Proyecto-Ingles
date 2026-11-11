@@ -742,3 +742,529 @@
   max-height: 38vh;
   object-fit: cover;
 }
+
+/* ============================================================
+   ESCUCHA, CANTA Y HABLA
+   ============================================================ */
+#seccion-musica {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 20px;
+}
+
+#musicaCatalogo {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+#musicaJuego {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.musica-catalogo-card {
+  max-width: 620px;
+  text-align: left;
+}
+
+.musica-catalogo-titulo {
+  margin: 0 0 8px;
+  color: #6B21A8;
+  font-size: clamp(1.4rem, 4vw, 1.8rem);
+  line-height: 1.2;
+}
+
+.musica-catalogo-subtitulo {
+  margin: 0 0 16px;
+  color: #64748B;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.musica-dificultad-actual {
+  margin: 0 0 10px;
+  color: #475569;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.musica-dificultad-actual span {
+  color: #6B21A8;
+}
+
+.musica-selector-dificultad {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.musica-dificultad-chip {
+  border: 2px solid #E5E7EB;
+  background: #FFFFFF;
+  color: #475569;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.musica-dificultad-chip:hover {
+  border-color: #C4B5FD;
+  background: #F5F3FF;
+}
+
+.musica-dificultad-chip.activa {
+  border-color: #8B5CF6;
+  background: #EDE9FE;
+  color: #5B21B6;
+  box-shadow: 0 6px 14px rgba(139, 92, 246, 0.18);
+}
+
+.musica-lista-canciones {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.musica-cancion-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border: 2px solid #DDD6FE;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #FAF5FF, #F5F3FF);
+  color: inherit;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.musica-cancion-item:hover {
+  transform: translateY(-2px);
+  border-color: #8B5CF6;
+  box-shadow: 0 12px 24px rgba(107, 33, 168, 0.16);
+}
+
+.musica-cancion-item:focus-visible {
+  outline: 3px solid #8B5CF6;
+  outline-offset: 2px;
+}
+
+.musica-cancion-item.completada {
+  border-color: #86EFAC;
+  background: linear-gradient(135deg, #F0FDF4, #DCFCE7);
+}
+
+.musica-cancion-item.completada:hover {
+  border-color: #22C55E;
+}
+
+.musica-cancion-item.completada .musica-cancion-play {
+  background: #22C55E;
+  box-shadow: 0 6px 14px rgba(34, 197, 94, 0.28);
+}
+
+.musica-cancion-item.bloqueada,
+.musica-cancion-item:disabled {
+  border-color: #E5E7EB;
+  background: #F8FAFC;
+  color: #94A3B8;
+  cursor: not-allowed;
+  opacity: 0.82;
+}
+
+.musica-cancion-item.bloqueada:hover,
+.musica-cancion-item:disabled:hover {
+  transform: none;
+  border-color: #E5E7EB;
+  box-shadow: none;
+}
+
+.musica-cancion-item.bloqueada .musica-cancion-nombre,
+.musica-cancion-item:disabled .musica-cancion-nombre {
+  color: #64748B;
+}
+
+.musica-cancion-item.bloqueada .musica-cancion-play,
+.musica-cancion-item:disabled .musica-cancion-play {
+  background: #CBD5E1;
+  box-shadow: none;
+}
+
+.musica-cancion-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.musica-cancion-nombre {
+  color: #1B1035;
+  font-weight: 800;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.musica-cancion-meta {
+  color: #6B7280;
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+
+.musica-cancion-play {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #8B5CF6;
+  color: #FFFFFF;
+  font-size: 0.95rem;
+  box-shadow: 0 6px 14px rgba(139, 92, 246, 0.35);
+}
+
+.musica-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 26px 18px;
+  border: 2px dashed #FDBA74;
+  border-radius: 16px;
+  background: #FFF7ED;
+  color: #9A3412;
+  text-align: center;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.musica-vacio-icono {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.musica-vacio strong {
+  font-size: 1.05rem;
+}
+
+.musica-vacio span:last-child {
+  color: #C2410C;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.musica-indicadores-juego {
+  margin-bottom: 0;
+}
+
+.musica-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.musica-header .btn-menu {
+  margin-bottom: 0;
+}
+
+.musica-btn-pausa {
+  align-self: center;
+  margin-left: 0;
+  margin-bottom: 0;
+}
+
+.musica-indicadores {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.musica-progreso-wrap {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.musica-progreso {
+  flex: 1;
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.25);
+  overflow: hidden;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.musica-progreso-barra {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #A855F7, #22C55E);
+  transition: width 0.45s ease;
+}
+
+.musica-puntaje {
+  color: white;
+  font-weight: 800;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.musica-card {
+  width: 100%;
+  max-width: 620px;
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 28px 24px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  text-align: center;
+}
+
+.musica-cancion {
+  color: #6B21A8;
+  font-weight: 800;
+  font-size: 1.05rem;
+  margin-bottom: 18px;
+}
+
+.musica-frase {
+  background: #F5F3FF;
+  border: 2px solid #EDE9FE;
+  border-radius: 16px;
+  padding: 22px 18px;
+  color: #1B1035;
+  font-size: clamp(1.35rem, 4vw, 2rem);
+  font-weight: 800;
+  line-height: 1.35;
+  white-space: pre-line;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: default;
+}
+
+.musica-frase:hover {
+  transform: scale(1.015);
+  box-shadow: 0 10px 24px rgba(107, 33, 168, 0.14);
+}
+
+.musica-controles {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+#btnMusicaGuia {
+  background: #FFFFFF;
+  color: #6B21A8;
+  border: 2px solid #C4B5FD;
+  box-shadow: 0 8px 18px rgba(107, 33, 168, 0.18);
+}
+
+#btnMusicaGuia:hover {
+  background: #F5F3FF;
+}
+
+#btnMusicaMic {
+  background: linear-gradient(135deg, #8B5CF6, #6B21A8 55%, #4C1D95);
+}
+
+#btnMusicaMic.escuchando {
+  background: #E11D48;
+  animation: latido 1s infinite, pulsoMicrofonoMusica 1.4s infinite;
+}
+
+@keyframes pulsoMicrofonoMusica {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.55), 0 8px 18px rgba(0, 0, 0, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 16px rgba(244, 63, 94, 0), 0 8px 24px rgba(244, 63, 94, 0.45);
+  }
+}
+
+.musica-feedback {
+  margin-top: 20px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: #F8FAFC;
+  color: #475569;
+  font-weight: 700;
+  font-size: 0.98rem;
+  line-height: 1.35;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.musica-feedback.exito {
+  background: #DCFCE7;
+  color: #166534;
+  border-left: 6px solid #22C55E;
+}
+
+.musica-feedback.reintento {
+  background: #FFEDD5;
+  color: #9A3412;
+  border-left: 6px solid #F97316;
+}
+
+.musica-feedback.escuchando {
+  background: #EDE9FE;
+  color: #5B21B6;
+  border-left: 6px solid #8B5CF6;
+}
+
+.musica-transcripcion {
+  margin-top: 12px;
+  min-height: 24px;
+  color: #64748B;
+  font-size: 0.92rem;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.musica-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(4px);
+}
+
+.musica-resultados-card {
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 32px 26px;
+  text-align: center;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+  animation: aparecer 0.3s ease;
+}
+
+.musica-resultados-card h2 {
+  margin: 0 0 10px;
+  color: #6B21A8;
+}
+
+.musica-resultados-card p {
+  color: #475569;
+  font-weight: 700;
+  margin: 8px 0;
+}
+
+.musica-resultados-card .musica-desbloqueo {
+  color: #15803D;
+  font-weight: 800;
+}
+
+.musica-resultados-card .musica-desbloqueo:empty {
+  display: none;
+}
+
+.musica-estrellas {
+  font-size: 2.6rem;
+  letter-spacing: 6px;
+  line-height: 1;
+  margin: 16px 0;
+  color: #F59E0B;
+  text-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.musica-estrellas .apagada {
+  color: #CBD5E1;
+  text-shadow: none;
+}
+
+.musica-resultados-card .botones-final {
+  margin-top: 24px;
+}
+
+@media (max-width: 560px) {
+  .musica-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .musica-header .btn-menu {
+    align-self: flex-start;
+  }
+
+  .musica-card {
+    padding: 22px 16px;
+  }
+
+  .musica-catalogo-titulo {
+    font-size: 1.35rem;
+  }
+
+  .musica-selector-dificultad {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .musica-dificultad-chip {
+    padding: 8px 6px;
+    font-size: 0.82rem;
+  }
+
+  .musica-cancion-item {
+    gap: 10px;
+    padding: 14px 12px;
+  }
+
+  .musica-cancion-nombre {
+    font-size: 0.94rem;
+  }
+
+  .musica-cancion-play {
+    width: 34px;
+    height: 34px;
+  }
+
+  .musica-controles {
+    flex-direction: column;
+  }
+
+  .musica-controles .boton {
+    width: 100%;
+  }
+
+  .musica-estrellas {
+    font-size: 2.1rem;
+  }
+}

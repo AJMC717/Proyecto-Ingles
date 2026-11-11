@@ -1,0 +1,17 @@
+Pistas de "Coldplay - Viva la Vida" para Medium - Song 1.
+
+Coloca aquí los archivos con estos nombres exactos:
+
+  linea1.mp3   -> I used to rule the world / Seas would rise when I gave the Word
+  linea2.mp3   -> Now in the morning, I sleep alone / Sweep the streets I used to own
+  linea3.mp3   -> I used to roll the dice / Feel the fear in my enemies' eyes
+  linea4.mp3   -> Listen as the crowd would sing / "Now the old king is dead, long live the king"
+  linea5.mp3   -> One minute, I held the key / Next, the walls were closed on me
+  linea6.mp3   -> And I discovered that my castles stand / Upon pillars of salt and pillars of sand
+  linea7.mp3   -> I hear Jerusalem bells a-ringin' / Roman cavalry choirs are singin'
+  linea8.mp3   -> Be my mirror, my sword and shield / My missionaries in a foreign field
+  linea9.mp3   -> For some reason I can't explain / Once you'd gone, there was never
+  linea10.mp3  -> Never an honest word / And that was when I ruled the world
+
+Cada archivo debe contener los dos versos que aparecen en su línea.
+La ronda 2 reutiliza los mismos 10 archivos.

@@ -23,20 +23,17 @@
 
 function seleccionarDificultad(nivel, btn) {
   dificultadActual = nivel;
+  resaltarDificultadMenu(nivel, btn);
+}
 
-  // Quita el resaltado de todos los botones
+function resaltarDificultadMenu(nivel, btn) {
+  // Sincroniza el resaltado del menú aunque el cambio venga del catálogo de música.
   document.querySelectorAll('.btn-dif').forEach(b => {
-    b.style.background = 'white';
-    b.style.borderColor = '#E5E5E5';
-    b.style.transform = 'scale(1)';
+    const activo = (b === btn) || (b.dataset.dificultad === nivel);
+    b.style.background = activo ? '#E8F5E9' : 'white';
+    b.style.borderColor = activo ? '#58CC02' : '#E5E5E5';
+    b.style.transform = activo ? 'scale(1.05)' : 'scale(1)';
   });
-
-  // Resalta el botón seleccionado
-  if (btn) {
-    btn.style.background = '#E8F5E9';
-    btn.style.borderColor = '#58CC02';
-    btn.style.transform = 'scale(1.05)';
-  }
 }
   const inputRespuesta = document.getElementById("respuestaInput");
   const mensaje = document.getElementById("mensaje");
@@ -297,6 +294,8 @@ function seleccionarDificultad(nivel, btn) {
     document.getElementById("app").classList.add("oculto");
     document.getElementById("pantallaMenuVerbos").classList.add("oculto");
     document.getElementById("pantallaNivel").classList.add("oculto");
+    const seccionMusica = document.getElementById("seccion-musica");
+    if (seccionMusica) seccionMusica.classList.add("oculto");
     // El cartelito del nivel solo se ve en Flash Cards
     document.getElementById("chipNivel").classList.toggle("oculto", !MODOS_VERBOS.includes(modoActual));
 
@@ -997,6 +996,11 @@ function seleccionarDificultad(nivel, btn) {
       if (modo === "oraciones") { abrirPantallaNivelOraciones(); return; }
       // Frases: primero se elige la categoría y el nivel
       if (modo === "submenu-frases") { abrirPantallaFrases(); return; }
+      // "Escucha, canta y habla" tiene su propio módulo (musica.js)
+      if (modo === "musica") {
+        if (typeof abrirSeccionMusica === "function") abrirSeccionMusica();
+        return;
+      }
       iniciarModo(modo);
     });
   });
@@ -1013,6 +1017,8 @@ function seleccionarDificultad(nivel, btn) {
     document.getElementById("pantallaMenu").classList.remove("oculto");
     document.getElementById("pantallaMenuVerbos").classList.add("oculto");
     document.getElementById("pantallaNivel").classList.add("oculto");
+    const seccionMusica = document.getElementById("seccion-musica");
+    if (seccionMusica) seccionMusica.classList.add("oculto");
     document.getElementById("app").classList.remove("oculto"); // saludo, Perfil, historial y cerrar sesión
   }
 

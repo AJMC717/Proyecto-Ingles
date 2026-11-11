@@ -69,9 +69,9 @@
     <h1>🗂️ How do you want to practice today?</h1>
 
     <div class="selector-dificultad" style="display: flex; justify-content: center; gap: 12px; margin: 15px 0 25px 0; width: 100%;">
-      <button class="btn-dif" onclick="seleccionarDificultad('facil', this)" style="padding: 10px 20px; border-radius: 12px; border: 2px solid #E5E5E5; background: white; cursor: pointer; font-weight: bold; font-size: 15px;">🟢 Fácil</button>
-      <button class="btn-dif" onclick="seleccionarDificultad('medio', this)" style="padding: 10px 20px; border-radius: 12px; border: 2px solid #E5E5E5; background: white; cursor: pointer; font-weight: bold; font-size: 15px;">🟡 Medio</button>
-      <button class="btn-dif" onclick="seleccionarDificultad('dificil', this)" style="padding: 10px 20px; border-radius: 12px; border: 2px solid #E5E5E5; background: white; cursor: pointer; font-weight: bold; font-size: 15px;">🔴 Difícil</button>
+      <button class="btn-dif" data-dificultad="facil" onclick="seleccionarDificultad('facil', this)" style="padding: 10px 20px; border-radius: 12px; border: 2px solid #E5E5E5; background: white; cursor: pointer; font-weight: bold; font-size: 15px;">🟢 Easy</button>
+      <button class="btn-dif" data-dificultad="medio" onclick="seleccionarDificultad('medio', this)" style="padding: 10px 20px; border-radius: 12px; border: 2px solid #E5E5E5; background: white; cursor: pointer; font-weight: bold; font-size: 15px;">🟡 Medium</button>
+      <button class="btn-dif" data-dificultad="dificil" onclick="seleccionarDificultad('dificil', this)" style="padding: 10px 20px; border-radius: 12px; border: 2px solid #E5E5E5; background: white; cursor: pointer; font-weight: bold; font-size: 15px;">🔴 Hard</button>
     </div>
 
     <div class="menu-modos">
@@ -98,6 +98,12 @@
         <span class="emoji-modo">💬</span>
         <div class="titulo-modo">Frequent phrases</div>
         <div class="desc-modo">Build, write, listen to and say the most common phrases.</div>
+      </button>
+
+      <button class="tarjeta-modo" id="card-canta-habla" data-modo="musica">
+        <span class="emoji-modo">🎵</span>
+        <div class="titulo-modo">Listen, Sing and Speak</div>
+        <div class="desc-modo">Listen to the song, pronounce the phrases with the microphone and complete each level.</div>
       </button>
     </div>
   </div>
@@ -311,6 +317,87 @@
     </div>
   </div>
 
+  <!-- ============================================================
+       ESCUCHA, CANTA Y HABLA
+       Práctica de pronunciación con la canción "If You're Happy".
+       ============================================================ -->
+  <div id="seccion-musica" class="oculto">
+    <div class="musica-header">
+      <button class="btn-menu" id="btnVolverMusica">⬅ Back to menu</button>
+    </div>
+
+    <!-- CATÁLOGO DE CANCIONES -->
+    <div id="musicaCatalogo">
+      <div class="musica-card musica-catalogo-card">
+        <h2 class="musica-catalogo-titulo">🎵 Listen, Sing and Speak</h2>
+        <p class="musica-catalogo-subtitulo">Choose a song and complete it to unlock the next one.</p>
+        <p class="musica-dificultad-actual">
+          Selected difficulty: <span id="musicaDificultadActual">Easy</span>
+        </p>
+
+        <div class="musica-selector-dificultad" id="musicaSelectorDificultad">
+          <button type="button" class="musica-dificultad-chip" data-dificultad="facil">🟢 Easy</button>
+          <button type="button" class="musica-dificultad-chip" data-dificultad="medio">🟡 Medium</button>
+          <button type="button" class="musica-dificultad-chip" data-dificultad="dificil">🔴 Hard</button>
+        </div>
+
+        <div class="musica-lista-canciones" id="musicaListaCanciones"></div>
+      </div>
+    </div>
+
+    <!-- JUEGO DE LA CANCIÓN -->
+    <div id="musicaJuego" class="oculto">
+      <button type="button" class="btn-menu btn-pausa musica-btn-pausa" id="btnMusicaPausa">⏸️ Pause and save</button>
+
+      <div class="musica-indicadores musica-indicadores-juego">
+        <span class="chip" id="musicaRonda">Round 1 of 2</span>
+        <span class="chip" id="musicaLinea">Line 1 of 4</span>
+      </div>
+
+      <div class="musica-progreso-wrap">
+        <div class="musica-progreso">
+          <div class="musica-progreso-barra" id="musicaBarra"></div>
+        </div>
+        <span class="musica-puntaje" id="musicaPuntaje">⭐ 0 pts</span>
+      </div>
+
+      <div class="musica-card">
+        <div class="musica-cancion" id="musicaTituloCancion">🎶 If You're Happy and You Know It</div>
+
+        <div class="musica-frase" id="musicaFrase">
+          If you're happy and you know it, clap your hands. (Clap-clap)
+        </div>
+
+        <div class="musica-controles">
+          <button class="boton" id="btnMusicaGuia">🔊 Play guide</button>
+          <button class="boton boton-mic" id="btnMusicaMic">🎤 Speak</button>
+        </div>
+
+        <div class="musica-feedback" id="musicaFeedback" aria-live="polite">
+          Listen to the guide and repeat the phrase with the microphone.
+        </div>
+        <div class="musica-transcripcion" id="musicaTranscripcion" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTADOS FINALES DE "ESCUCHA, CANTA Y HABLA" -->
+  <div id="musicaResultados" class="musica-modal oculto">
+    <div class="musica-resultados-card">
+      <h2>🎉 Rounds completed!</h2>
+      <p id="musicaResultadoPuntaje">Session score: 0 pts</p>
+      <p id="musicaResultadoAcumulado">Total accumulated score: 0 pts</p>
+      <div class="musica-estrellas" id="musicaEstrellas" aria-label="Performance stars"></div>
+      <p id="musicaResultadoDetalle"></p>
+      <p id="musicaResultadoDesbloqueo" class="musica-desbloqueo"></p>
+      <div class="botones-final">
+        <button class="boton" id="btnMusicaReintentar">🔁 Try again</button>
+        <button class="boton boton-secundario" id="btnMusicaVolverCatalogo">🗂️ Back to catalog</button>
+        <button class="boton boton-secundario" id="btnMusicaVolverMenu">🏠 Back to menu</button>
+      </div>
+    </div>
+  </div>
+
     <!-- MODAL GENÉRICO (para reemplazar alerts y confirms) -->
   <div id="modalGenerico" class="oculto" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:10000; display:flex; align-items:center; justify-content:center;">
     <div style="background:white; border-radius:20px; padding:30px; max-width:420px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.5); text-align:center;">
@@ -367,5 +454,6 @@
   <script src="js/usuarios.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/juego.js"></script>
+  <script src="js/musica.js"></script>
 </body>
 </html>
