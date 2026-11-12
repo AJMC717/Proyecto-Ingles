@@ -21,6 +21,40 @@
   let categoriaFlash = "verbos";   // verbos, animales, comida, cosas o mix
   let nivelFlash = "facil";        // facil, medio o dificil
 
+    // Conjugaciones en presente (3ra persona) para los 16 verbos en español
+  const conjugacionPresenteEs = {
+    Play: "juega",
+    Eat: "come",
+    Read: "lee",
+    Sing: "canta",
+    Write: "escribe",
+    Sleep: "duerme",
+    Run: "corre",
+    Talk: "habla",
+    Dance: "baila",
+    Listen: "escucha",
+    Speak: "habla",
+    Ask: "pregunta",
+    Answer: "responde",
+    Learn: "aprende",
+    Teach: "enseña",
+    Practice: "practica"
+  };
+
+    // Convierte un verbo a su forma gerundio (-ing) correctamente
+  function aGerundio(verbo) {
+    const v = verbo.toLowerCase();
+    // Casos especiales de verbos que terminan en 'e' muda
+    if (v.endsWith('e') && !v.endsWith('ee')) {
+      return v.slice(0, -1) + 'ing';  // dance→dancing, write→writing
+    }
+    // Verbos CVC (consonante-vocal-consonante) que duplican: run→running
+    if (v.length === 3 && /[bcdfgklmnpt]/.test(v[0]) && /[aeiou]/.test(v[1]) && /[bcdfgklmnpt]/.test(v[2])) {
+      return v + v[2] + 'ing';
+    }
+    // Caso normal
+    return v + 'ing';
+  }
 function seleccionarDificultad(nivel, btn) {
   dificultadActual = nivel;
   resaltarDificultadMenu(nivel, btn);
@@ -121,24 +155,128 @@ function resaltarDificultadMenu(nivel, btn) {
   function generarPreguntasDePreguntas() {
     const lista = [];
     const verbosMezclados = mezclar(verbos);
-    const totalPreguntas = 16; // 8 de Tipo A, 8 de Tipo B
+    const totalPreguntas = 16;
 
-    // Banco de preguntas variadas para Tipo B
-    const preguntasTipoB = [
-      { pregunta: (p, v) => `What is ${p.toLowerCase()} doing?`, respuesta: (p, v) => `${p} is ${v.nombre.toLowerCase()}ing.` },
-      { pregunta: (p, v) => `What does ${p.toLowerCase()} do?`, respuesta: (p, v) => `${p} ${v.nombre.toLowerCase()}s.` },
-      { pregunta: (p, v) => `"${p} is ${v.nombre.toLowerCase()}ing." What is the correct question?`, respuesta: (p, v) => `What is ${p.toLowerCase()} doing?` },
-      { pregunta: (p, v) => `Look at ${p.toLowerCase()}. What action is ${p.toLowerCase()} doing?`, respuesta: (p, v) => `${v.nombre}` },
-      { pregunta: (p, v) => `"${p} likes to ${v.nombre.toLowerCase()}." What is the verb?`, respuesta: (p, v) => `${v.nombre}` },
-      { pregunta: (p, v) => `What is happening in the picture?`, respuesta: (p, v) => `${p} is ${v.nombre.toLowerCase()}ing.` },
-      { pregunta: (p, v) => `Choose the correct verb for this image:`, respuesta: (p, v) => `${v.nombre}` },
-      { pregunta: (p, v) => `"${p} is having fun." What is ${p.toLowerCase()} doing?`, respuesta: (p, v) => `${v.nombre}` }
+    // Banco de preguntas Tipo A (sistema pregunta, usuario responde)
+    const bancoTipoA = [
+      (p, v) => `What is ${p.toLowerCase()} doing?`,
+      (p, v) => `Look at the picture. What is ${p.toLowerCase()} doing?`,
+      (p, v) => `Choose the correct verb for this image:`,
+      (p, v) => `What is happening in this scene?`,
+      (p, v) => `What does ${p.toLowerCase()} do in the picture?`,
+      (p, v) => `Identify the verb in this image:`,
+      (p, v) => `What action is shown here?`,
+      (p, v) => `Select the correct verb:`
     ];
 
+    // Banco de preguntas Tipo B (sistema da respuesta, usuario elige pregunta)
+    const bancoTipoB = [
+      (p, v) => ({
+        consigna: `"${p} is ${aGerundio(v.nombre)}." What is the correct question?`,
+        respuesta: `What is ${p.toLowerCase()} doing?`,
+        distractores: [`Where is ${p.toLowerCase()} going?`, `Who is ${p.toLowerCase()}?`, `When does ${p.toLowerCase()} eat?`]
+      }),
+      (p, v) => ({
+        consigna: `Answer: "${p} ${v.nombre.toLowerCase()}s." What do you ask?`,
+        respuesta: `What does ${p.toLowerCase()} do?`,
+        distractores: [`Where does ${p.toLowerCase()} go?`, `Who does ${p.toLowerCase()} know?`, `When does ${p.toLowerCase()} play?`]
+      }),
+      (p, v) => ({
+        consigna: `"${p} likes to ${v.nombre.toLowerCase()}." What is the verb?`,
+        respuesta: v.nombre,
+        distractores: [verboAleatorioDiferente(v), verboAleatorioDiferente(v), verboAleatorioDiferente(v)]
+      }),
+      (p, v) => ({
+        consigna: `If the answer is "${p} is ${aGerundio(v.nombre)}", what is the question?`,
+        respuesta: `What is ${p.toLowerCase()} doing?`,
+        distractores: [`Why is ${p.toLowerCase()} here?`, `How does ${p.toLowerCase()} feel?`, `Where is ${p.toLowerCase()}?`]
+      }),
+      (p, v) => ({
+        consigna: `"${p} is having fun." What is ${p.toLowerCase()} doing?`,
+        respuesta: v.nombre,
+        distractores: [verboAleatorioDiferente(v), verboAleatorioDiferente(v), verboAleatorioDiferente(v)]
+      }),
+      (p, v) => ({
+        consigna: `Look at ${p.toLowerCase()}. What action is ${p.toLowerCase()} doing?`,
+        respuesta: v.nombre,
+        distractores: [verboAleatorioDiferente(v), verboAleatorioDiferente(v), verboAleatorioDiferente(v)]
+      }),
+      (p, v) => ({
+        consigna: `"${p} enjoys this activity." What is it?`,
+        respuesta: v.nombre,
+        distractores: [verboAleatorioDiferente(v), verboAleatorioDiferente(v), verboAleatorioDiferente(v)]
+      }),
+      (p, v) => ({
+        consigna: `What question matches: "${p} is ${aGerundio(v.nombre)}"?`,
+        respuesta: `What is ${p.toLowerCase()} doing?`,
+        distractores: [`Why is ${p.toLowerCase()} smiling?`, `How is ${p.toLowerCase()} feeling?`, `Where is ${p.toLowerCase()} going?`]
+      })
+    ];
+
+    // Banco de preguntas Tipo A en español (nivel difícil)
+    const bancoTipoAEs = [
+      (p, v) => `¿Cómo se dice "<b>${v.es}</b>" en inglés?`,
+      (p, v) => `Traduce al inglés: "<b>${v.es}</b>"`,
+      (p, v) => `¿Cuál es el verbo en inglés para: "<b>${v.es}</b>"?`,
+      (p, v) => `Escribe en inglés: "<b>${v.es}</b>"`,
+      (p, v) => `¿Cómo se expresa "<b>${v.es}</b>" en inglés?`,
+      (p, v) => `Traduce esta acción: "<b>${v.es}</b>"`,
+      (p, v) => `¿Cuál es la palabra en inglés para: "<b>${v.es}</b>"?`,
+      (p, v) => `Convierte al inglés: "<b>${v.es}</b>"`
+    ];
+
+        // Banco de preguntas Tipo B en español (nivel difícil) - 100% español y DIFERENTES
+        // Banco de preguntas Tipo B en español (nivel difícil) - 100% español y correctas
+        // Banco de preguntas Tipo B en español (nivel difícil) - gramaticalmente correctas
+    const bancoTipoBEs = [
+      // 1. Presente continuo: qué está haciendo ahora
+      (p, v) => ({
+        consigna: `Traduce al inglés: "<b>¿Qué está haciendo ella ahora mismo?</b>"`,
+        respuesta: `What is she doing right now?`
+      }),
+      // 2. Presente simple: qué hace habitualmente
+      (p, v) => ({
+        consigna: `¿Cómo se pregunta en inglés: "<b>¿Qué hace ella todos los días?</b>"?`,
+        respuesta: `What does she do every day?`
+      }),
+      // 3. Pasado: qué hizo ayer
+      (p, v) => ({
+        consigna: `Escribe en inglés: "<b>¿Qué hizo ella ayer?</b>"`,
+        respuesta: `What did she do yesterday?`
+      }),
+      // 4. Futuro: qué hará mañana
+      (p, v) => ({
+        consigna: `Convierte al inglés: "<b>¿Qué hará ella mañana?</b>"`,
+        respuesta: `What will she do tomorrow?`
+      }),
+      // 5. Razón: por qué hace algo (verbo conjugado)
+      (p, v) => ({
+        consigna: `Traduce esta pregunta: "<b>¿Por qué ${conjugacionPresenteEs[v.nombre]} ella?</b>"`,
+        respuesta: `Why does she ${v.nombre.toLowerCase()}?`
+      }),
+      // 6. Lugar: dónde hace algo (verbo conjugado)
+      (p, v) => ({
+        consigna: `¿Cómo se dice en inglés: "<b>¿Dónde ${conjugacionPresenteEs[v.nombre]} ella?</b>"?`,
+        respuesta: `Where does she ${v.nombre.toLowerCase()}?`
+      }),
+      // 7. Tiempo: cuándo hace algo (verbo conjugado)
+      (p, v) => ({
+        consigna: `Escribe en inglés: "<b>¿Cuándo ${conjugacionPresenteEs[v.nombre]} ella?</b>"`,
+        respuesta: `When does she ${v.nombre.toLowerCase()}?`
+      }),
+      // 8. Compañía: con quién hace algo (verbo conjugado)
+      (p, v) => ({
+        consigna: `¿Cómo preguntarías en inglés: "<b>¿Con quién ${conjugacionPresenteEs[v.nombre]} ella?</b>"?`,
+        respuesta: `Who does she ${v.nombre.toLowerCase()} with?`
+      })
+    ];
     for (let i = 0; i < totalPreguntas; i++) {
       const verbo = verbosMezclados[i % verbosMezclados.length];
       const pronombre = pronombrePorVerbo[verbo.nombre] || "She";
-      const esTipoA = i % 2 === 0; // Alterna: A, B, A, B...
+      const esTipoA = i % 2 === 0;
+      
+      // Índice para el banco (0-7) basado en la mitad del índice
+      const indiceBanco = Math.floor(i / 2) % 8;
 
       let pregunta = {
         verboIdx: i,
@@ -148,74 +286,122 @@ function resaltarDificultadMenu(nivel, btn) {
         pronombre: pronombre
       };
 
+      // ============ NIVEL FÁCIL: Opción múltiple ============
       if (dificultadActual === "facil") {
         if (esTipoA) {
-          // TIPO A: Imagen + pregunta → elegir verbo
-          pregunta.consigna = `What is ${pronombre.toLowerCase()} doing?`;
+          const consignaFn = bancoTipoA[indiceBanco];
+          pregunta.consigna = consignaFn(pronombre, verbo);
           pregunta.respuestaCorrecta = verbo.nombre;
           pregunta.opciones = armarOpcionesQA(verbo.nombre, verbos.map(v => v.nombre));
         } else {
-          // TIPO B: Variamos las preguntas usando el banco
-          const preguntaB = preguntasTipoB[i % preguntasTipoB.length];
-          pregunta.consigna = preguntaB.pregunta(pronombre, verbo);
-          pregunta.respuestaCorrecta = preguntaB.respuesta(pronombre, verbo);
-          
-          // Generamos opciones variadas para Tipo B
-          if (pregunta.respuestaCorrecta.includes(" ")) {
-            // Si la respuesta es una frase completa, usamos otras frases como distractoras
-            pregunta.opciones = mezclar([
-              pregunta.respuestaCorrecta,
-              `${pronombre} is playing.`,
-              `${pronombre} is eating.`,
-              `${pronombre} is sleeping.`
-            ]);
-          } else {
-            // Si es solo el verbo, usamos verbos como opciones
-            pregunta.opciones = armarOpcionesQA(verbo.nombre, verbos.map(v => v.nombre));
-          }
+          const datosB = bancoTipoB[indiceBanco](pronombre, verbo);
+          pregunta.consigna = datosB.consigna;
+          pregunta.respuestaCorrecta = datosB.respuesta;
+          pregunta.opciones = armarOpcionesQA(datosB.respuesta, [datosB.respuesta, ...datosB.distractores]);
         }
-      } 
+      }
+      // ============ NIVEL MEDIO: Escribir en inglés ============
       else if (dificultadActual === "medio") {
         pregunta.tipoRespuesta = "escribir";
+        pregunta.imgSutil = false;
         if (esTipoA) {
-          pregunta.consigna = `What is ${pronombre.toLowerCase()} doing?`;
+          const consignaFn = bancoTipoA[indiceBanco];
+          pregunta.consigna = consignaFn(pronombre, verbo) + " (write the verb)";
           pregunta.respuestaCorrecta = verbo.nombre;
         } else {
-          // Tipo B en medio: escribir la pregunta
-          pregunta.consigna = `Answer: "${pronombre} is ${verbo.nombre.toLowerCase()}ing."<br><br>Write the correct question:`;
-          pregunta.respuestaCorrecta = `What is ${pronombre.toLowerCase()} doing?`;
+          const datosB = bancoTipoB[indiceBanco](pronombre, verbo);
+          pregunta.consigna = datosB.consigna + " (write the answer)";
+          pregunta.respuestaCorrecta = datosB.respuesta;
         }
-      } 
+      }
+      // ============ NIVEL DIFÍCIL: Traducción español→inglés ============
       else if (dificultadActual === "dificil") {
         pregunta.tipoRespuesta = "escribir";
         pregunta.imgSutil = true;
         if (esTipoA) {
-          pregunta.consigna = `¿Cómo se dice "<b>${verbo.es}</b>" en inglés?`;
+          const consignaFn = bancoTipoAEs[indiceBanco];
+          pregunta.consigna = consignaFn(pronombre, verbo);
           pregunta.respuestaCorrecta = verbo.nombre;
         } else {
-          pregunta.consigna = `¿Cómo se pregunta "<b>¿Qué está haciendo ${pronombre.toLowerCase()}?</b>" en inglés?`;
-          pregunta.respuestaCorrecta = `What is ${pronombre.toLowerCase()} doing?`;
+          const datosB = bancoTipoBEs[indiceBanco](pronombre, verbo);
+          pregunta.consigna = datosB.consigna;
+          pregunta.respuestaCorrecta = datosB.respuesta;
         }
       }
       lista.push(pregunta);
     }
     return mezclar(lista);
-  }    
-    function armarOpcionesQA(correcta, todas) {
-    // Filtramos para quitar la correcta de la lista "todas"
-    const otras = mezclar(todas.filter(v => v !== correcta));
+  }
+
+  // Función auxiliar para obtener un verbo aleatorio diferente al actual
+  function verboAleatorioDiferente(verboActual) {
+    const otros = verbos.filter(v => v.nombre !== verboActual.nombre);
+    return otros[Math.floor(Math.random() * otros.length)].nombre;
+  }
+  // Genera 4 opciones de VERBOS (sin duplicados garantizado)
+  function armarOpcionesDeVerbos(correcta) {
+    const opciones = [correcta];
+    const otrosVerbos = verbos.filter(v => v.nombre !== correcta);
+    const mezclados = mezclar(otrosVerbos);
+    
+    for (let i = 0; i < 3 && i < mezclados.length; i++) {
+      opciones.push(mezclados[i].nombre);
+    }
+    return mezclar(opciones);
+  }
+    // Genera 4 opciones de PREGUNTAS (sin duplicados garantizado)
+  function armarOpcionesDePreguntas(pronombre) {
+    const correcta = `What is ${pronombre.toLowerCase()} doing?`;
+    const opciones = [correcta];
+    const otrasPreguntas = [
+      `Where is ${pronombre.toLowerCase()} going?`,
+      `Who is ${pronombre.toLowerCase()}?`,
+      `When does ${pronombre.toLowerCase()} eat?`,
+      `What does ${pronombre.toLowerCase()} do?`,
+      `Why is ${pronombre.toLowerCase()} happy?`,
+      `How is ${pronombre.toLowerCase()} feeling?`
+    ];
+    const mezcladas = mezclar(otrasPreguntas);
+    
+    for (let i = 0; i < 3 && i < mezcladas.length; i++) {
+      opciones.push(mezcladas[i]);
+    }
+    return mezclar(opciones);
+  }
+  function armarOpcionesQA(correcta, todas) {
+    // Garantizar 4 opciones ÚNICAS sin fallar
     const opciones = [correcta];
     
-    // Agregamos hasta 3 opciones incorrectas (sin repetir)
-    for (let i = 0; i < Math.min(3, otras.length); i++) {
-      if (!opciones.includes(otras[i])) {
-        opciones.push(otras[i]);
+    // Crear pool de opciones válidas (sin la correcta y sin duplicados)
+    const pool = [];
+    const vistas = new Set([correcta]);
+    
+    for (const item of todas) {
+      if (!vistas.has(item)) {
+        vistas.add(item);
+        pool.push(item);
       }
     }
     
+    // Mezclar el pool
+    const poolMezclado = mezclar(pool);
+    
+    // Tomar hasta 3 opciones del pool
+    for (let i = 0; i < poolMezclado.length && opciones.length < 4; i++) {
+      opciones.push(poolMezclado[i]);
+    }
+    
+    // Si aún no hay 4, agregar opciones genéricas de respaldo
+    const respaldo = ["Run", "Sleep", "Eat", "Play", "Talk", "Write", "Read", "Sing"];
+    for (const r of respaldo) {
+      if (opciones.length < 4 && !opciones.includes(r)) {
+        opciones.push(r);
+      }
+    }
+    
+    // Mezclar el resultado final
     return mezclar(opciones);
   }
-
   function iniciarModo(modo) {
     const estadoGuardado = JSON.parse(localStorage.getItem(claveGuardado(modo)));
 
@@ -305,7 +491,14 @@ function resaltarDificultadMenu(nivel, btn) {
     document.querySelector(".carrusel").classList.toggle("solo-audio", modoActual === "escuchar" && nivelFlash !== "facil");
     document.querySelector(".carrusel").classList.toggle("carrusel-frases", modoActual === "frases"); // tamaño de imagen solo para Frases
     document.getElementById("zonaPaso").classList.add("oculto");
-    document.getElementById("zonaOpciones").classList.toggle("oculto", modoActual !== "elegir" && modoActual !== "preguntas");
+    // En modo preguntas, ocultar ambas zonas por defecto (se controlan dinámicamente en mostrarPregunta)
+    if (modoActual === "preguntas") {
+      document.getElementById("zonaTexto").classList.add("oculto");
+      document.getElementById("zonaOpciones").classList.add("oculto");
+    } else {
+      document.getElementById("zonaTexto").classList.toggle("oculto", !(modoActual === "escribir" || modoActual === "escuchar" || modoActual === "completo"));
+      document.getElementById("zonaOpciones").classList.toggle("oculto", modoActual !== "elegir");
+    }
     document.getElementById("zonaOraciones").classList.toggle("oculto", modoActual !== "oraciones");
     document.getElementById("consigna").classList.toggle("oculto", modoActual !== "oraciones" && modoActual !== "preguntas");
   }
@@ -376,26 +569,42 @@ function resaltarDificultadMenu(nivel, btn) {
     } else if (modoActual === "completo") {
       irAPaso(1);
     } else if (modoActual === "preguntas") {
-      // Usamos innerHTML para que funcione el <br> y <b> de las consignas
+      // 1. Consigna
       document.getElementById("consigna").innerHTML = q.consigna;
       
-      if (q.tipoRespuesta === "escribir") {
-        document.getElementById("zonaTexto").classList.remove("oculto");
-        document.getElementById("zonaOpciones").classList.add("oculto");
-        inputRespuesta.placeholder = "Type your answer here...";
-        prepararZonaTexto();
-      } else {
-        document.getElementById("zonaTexto").classList.add("oculto");
-        document.getElementById("zonaOpciones").classList.remove("oculto");
+      // 2. FORZAR VISIBILIDAD (Esto mata cualquier regla del CSS)
+      if (dificultadActual === "facil") {
+        // FÁCIL: Ocultar texto, mostrar opciones en 2x2
+        document.getElementById("zonaTexto").style.setProperty('display', 'none', 'important');
+        document.getElementById("zonaOpciones").style.setProperty('display', 'grid', 'important');
+        document.getElementById("zonaOpciones").style.gridTemplateColumns = '1fr 1fr';
+        document.getElementById("zonaOpciones").style.gap = '15px';
+        document.getElementById("zonaOpciones").style.maxWidth = '600px';
+        document.getElementById("zonaOpciones").style.margin = '20px auto';
         prepararZonaOpciones(q);
+      } else {
+        // MEDIO Y DIFÍCIL: Ocultar opciones, FORZAR mostrar texto y check
+        document.getElementById("zonaOpciones").style.setProperty('display', 'none', 'important');
+        document.getElementById("zonaTexto").style.setProperty('display', 'flex', 'important');
+        document.getElementById("zonaTexto").style.justifyContent = 'center';
+        document.getElementById("zonaTexto").style.alignItems = 'center';
+        document.getElementById("zonaTexto").style.gap = '15px';
+        document.getElementById("zonaTexto").style.maxWidth = '600px';
+        document.getElementById("zonaTexto").style.margin = '30px auto';
+        
+        inputRespuesta.placeholder = "Type your answer here...";
+        inputRespuesta.value = "";
+        inputRespuesta.disabled = false;
+        inputRespuesta.focus();
+        prepararZonaTexto();
       }
 
-      // Efecto visual para el nivel Difícil (imagen sutil)
+      // 3. Imagen
       const imgActual = document.getElementById("imagenActual");
-      if (q.imgSutil) {
-        imgActual.style.opacity = "0.3";
-        imgActual.style.transform = "scale(0.6)";
-        imgActual.style.filter = "grayscale(80%)";
+      if (dificultadActual === "dificil") {
+        imgActual.style.opacity = "0.15";
+        imgActual.style.transform = "scale(0.4)";
+        imgActual.style.filter = "grayscale(100%) blur(2px)";
       } else {
         imgActual.style.opacity = "1";
         imgActual.style.transform = "scale(1)";
@@ -461,29 +670,23 @@ function resaltarDificultadMenu(nivel, btn) {
      PASO 6b: modo "elegir" -> se elige entre 4 opciones
      ============================================================ */
   function prepararZonaOpciones(q) {
-    let opciones;
-    if (q.opcionesFlash) {
-      // Flash Cards: las opciones ya vienen armadas según el nivel
-      opciones = mezclar(q.opcionesFlash);
-    } else {
-      // Los demás modos siguen como estaban
-      const otros = mezclar(
-        verbos.map((_, idx) => idx).filter(idx => idx !== q.verboIdx)
-      ).slice(0, 3).map(idx => verbos[idx].nombre);
-      opciones = mezclar([q.respuestaCorrecta, ...otros]);
-    }
-
+    let opciones = q.opciones && q.opciones.length > 0 ? q.opciones : [q.respuestaCorrecta];
     const contenedor = document.getElementById("zonaOpciones");
     contenedor.innerHTML = "";
+
     opciones.forEach(nombreOpcion => {
       const btn = document.createElement("button");
       btn.className = "opcion";
       btn.textContent = nombreOpcion;
+      btn.style.padding = '15px';
+      btn.style.fontSize = '16px';
+      btn.style.borderRadius = '12px';
+      btn.style.cursor = 'pointer';
+      btn.style.width = '100%';
       btn.addEventListener("click", () => verificarOpcion(nombreOpcion, q.respuestaCorrecta, btn));
       contenedor.appendChild(btn);
     });
   }
-
   function verificarOpcion(elegida, correcta, botonElegido) {
     if (respondiendo) return;
 
@@ -880,13 +1083,28 @@ function resaltarDificultadMenu(nivel, btn) {
   // Los demás modos siguen con una sola partida guardada por usuario, como antes.
   function claveGuardado(modo) {
     const user = localStorage.getItem('userActual');
+    
+    // Modos de Flash Cards: cada categoría + nivel tiene su propia partida
     if (MODOS_VERBOS.includes(modo)) {
       return 'estado_flash_' + user + '|' + modo + '|' + categoriaFlash + '|' + nivelFlash;
     }
-    // Frases: cada categoría + nivel tiene su propia partida (igual que Flash Cards)
+    
+    // Frases: cada categoría + nivel tiene su propia partida
     if (modo === "frases") {
       return 'estado_frases_' + user + '|' + categoriaFrases + '|' + nivelFrases;
     }
+    
+    // Modo preguntas: cada nivel de dificultad tiene su propia partida
+    if (modo === "preguntas") {
+      return 'estado_preguntas_' + user + '|' + dificultadActual;
+    }
+    
+    // Oraciones: cada categoría + nivel tiene su propia partida
+    if (modo === "oraciones") {
+      return 'estado_oraciones_' + user + '|' + categoriaOraciones + '|' + nivelOraciones;
+    }
+    
+    // Los demás modos: una sola partida por usuario
     return 'estado_juego_' + user;
   }
   function guardarEstadoJuego() {

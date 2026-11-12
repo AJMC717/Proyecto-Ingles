@@ -1268,3 +1268,30 @@
     font-size: 2.1rem;
   }
 }
+/* Ajustar consigna para que no sea tan larga */
+#consigna {
+  max-width: 500px !important;
+  margin: 0 auto 20px auto !important;
+  text-align: center !important;
+  padding: 0 20px !important;
+  line-height: 1.4 !important;
+  font-size: 16px !important;
+}
+/* Centrar campo de texto en modo preguntas (niveles Medio y Difícil) */
+#modoActual-preguntas #zonaTexto {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 15px !important;
+  max-width: 600px !important;
+  margin: 30px auto !important;
+}
+
+#modoActual-preguntas #respuestaInput {
+  flex: 1 !important;
+  max-width: 400px !important;
+  text-align: center !important;
+  font-size: 16px !important;
+  padding: 15px 20px !important;
+}
+
