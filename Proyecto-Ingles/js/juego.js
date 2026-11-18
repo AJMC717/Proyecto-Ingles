@@ -501,6 +501,19 @@ function resaltarDificultadMenu(nivel, btn) {
     }
     document.getElementById("zonaOraciones").classList.toggle("oculto", modoActual !== "oraciones");
     document.getElementById("consigna").classList.toggle("oculto", modoActual !== "oraciones" && modoActual !== "preguntas");
+
+    // Limpiar cualquier resto del modo Preguntas para que no afecte a los demás módulos
+    const juegoEl = document.getElementById("juegoEnCurso");
+    juegoEl.classList.toggle("modo-preguntas", modoActual === "preguntas");
+    if (modoActual !== "preguntas") juegoEl.classList.remove("qa-dificil");
+    ["zonaTexto", "zonaOpciones"].forEach(id => {
+      const el = document.getElementById(id);
+      el.removeAttribute("style");
+    });
+    const imgA = document.getElementById("imagenActual");
+    imgA.style.removeProperty("opacity");
+    imgA.style.removeProperty("transform");
+    imgA.style.removeProperty("filter");
   }
      
   
@@ -572,43 +585,18 @@ function resaltarDificultadMenu(nivel, btn) {
       // 1. Consigna
       document.getElementById("consigna").innerHTML = q.consigna;
       
-      // 2. FORZAR VISIBILIDAD (Esto mata cualquier regla del CSS)
+      // 2. Mostrar opciones (fácil) o campo de texto (medio/difícil) solo con clases
+      const juego = document.getElementById("juegoEnCurso");
+      juego.classList.toggle("qa-dificil", dificultadActual === "dificil");
       if (dificultadActual === "facil") {
-        // FÁCIL: Ocultar texto, mostrar opciones en 2x2
-        document.getElementById("zonaTexto").style.setProperty('display', 'none', 'important');
-        document.getElementById("zonaOpciones").style.setProperty('display', 'grid', 'important');
-        document.getElementById("zonaOpciones").style.gridTemplateColumns = '1fr 1fr';
-        document.getElementById("zonaOpciones").style.gap = '15px';
-        document.getElementById("zonaOpciones").style.maxWidth = '600px';
-        document.getElementById("zonaOpciones").style.margin = '20px auto';
+        document.getElementById("zonaTexto").classList.add("oculto");
+        document.getElementById("zonaOpciones").classList.remove("oculto");
         prepararZonaOpciones(q);
       } else {
-        // MEDIO Y DIFÍCIL: Ocultar opciones, FORZAR mostrar texto y check
-        document.getElementById("zonaOpciones").style.setProperty('display', 'none', 'important');
-        document.getElementById("zonaTexto").style.setProperty('display', 'flex', 'important');
-        document.getElementById("zonaTexto").style.justifyContent = 'center';
-        document.getElementById("zonaTexto").style.alignItems = 'center';
-        document.getElementById("zonaTexto").style.gap = '15px';
-        document.getElementById("zonaTexto").style.maxWidth = '600px';
-        document.getElementById("zonaTexto").style.margin = '30px auto';
-        
+        document.getElementById("zonaOpciones").classList.add("oculto");
+        document.getElementById("zonaTexto").classList.remove("oculto");
         inputRespuesta.placeholder = "Type your answer here...";
-        inputRespuesta.value = "";
-        inputRespuesta.disabled = false;
-        inputRespuesta.focus();
         prepararZonaTexto();
-      }
-
-      // 3. Imagen
-      const imgActual = document.getElementById("imagenActual");
-      if (dificultadActual === "dificil") {
-        imgActual.style.opacity = "0.15";
-        imgActual.style.transform = "scale(0.4)";
-        imgActual.style.filter = "grayscale(100%) blur(2px)";
-      } else {
-        imgActual.style.opacity = "1";
-        imgActual.style.transform = "scale(1)";
-        imgActual.style.filter = "none";
       }
     } else if (modoActual === "frases") {
       irAPasoFrase(1);
@@ -670,7 +658,10 @@ function resaltarDificultadMenu(nivel, btn) {
      PASO 6b: modo "elegir" -> se elige entre 4 opciones
      ============================================================ */
   function prepararZonaOpciones(q) {
-    let opciones = q.opciones && q.opciones.length > 0 ? q.opciones : [q.respuestaCorrecta];
+    let opciones = (q.opciones && q.opciones.length > 0) ? q.opciones
+                 : (q.opcionesFlash && q.opcionesFlash.length > 0) ? q.opcionesFlash
+                 : [q.respuestaCorrecta];
+    opciones = mezclar(opciones.slice());   // la correcta no siempre en la misma posición
     const contenedor = document.getElementById("zonaOpciones");
     contenedor.innerHTML = "";
 
@@ -678,11 +669,6 @@ function resaltarDificultadMenu(nivel, btn) {
       const btn = document.createElement("button");
       btn.className = "opcion";
       btn.textContent = nombreOpcion;
-      btn.style.padding = '15px';
-      btn.style.fontSize = '16px';
-      btn.style.borderRadius = '12px';
-      btn.style.cursor = 'pointer';
-      btn.style.width = '100%';
       btn.addEventListener("click", () => verificarOpcion(nombreOpcion, q.respuestaCorrecta, btn));
       contenedor.appendChild(btn);
     });
