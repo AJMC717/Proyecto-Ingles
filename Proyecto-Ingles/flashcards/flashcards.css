@@ -1,0 +1,70 @@
+/* flashcards.css: Write, Listen and Speak */
+/* ============================================================
+   FLASH CARDS: pantalla de categoría y nivel
+   ============================================================ */
+#pantallaNivel {
+  width: 100%;
+  max-width: 560px;
+  text-align: center;
+}
+
+.texto-ayuda {
+  color: white;
+  font-weight: bold;
+  margin: 20px 0 10px;
+}
+
+.fila-categorias {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.chip-categoria {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 16px;
+  background: white;
+  color: #1B1035;
+  font-size: 0.95rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.chip-categoria.activa {
+  background: #58CC02;
+  color: white;
+}
+
+.lista-niveles {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 90vw;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.boton-nivel {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: none;
+  border-radius: 16px;
+  padding: 16px;
+  background: white;
+  color: #1B1035;
+  text-align: left;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.boton-nivel:hover {
+  background: #E8F5E9;
+}
+
+.nivel-emoji {
+  font-size: 2rem;
+}
+

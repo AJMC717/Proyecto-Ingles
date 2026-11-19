@@ -1,0 +1,67 @@
+/* frases.css: Frequent phrases */
+/* ============================================================
+   FRASES: pantalla de categoría y nivel
+   ============================================================ */
+#pantallaFrases {
+  width: 100%;
+  max-width: 760px;
+  text-align: center;
+}
+
+/* Los botones de categoría van en una sola línea (en pantallas pequeñas se desliza) */
+#filaCategoriasFrases {
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+#filaCategoriasFrases .chip-categoria {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  #filaCategoriasFrases .chip-categoria {
+    padding: 8px 11px;
+    font-size: 0.82rem;
+  }
+}
+
+.boton-nivel-frases {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: none;
+  border-radius: 16px;
+  padding: 16px;
+  background: white;
+  color: #1B1035;
+  text-align: left;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.boton-nivel-frases:hover {
+  background: #E8F5E9;
+}
+
+
+/* ============================================================
+   FRASES: tamaño de la imagen
+   Los otros juegos usan imágenes cuadradas. Las de Frases pueden tener otra
+   proporción y se veían más pequeñas: aquí la imagen ocupa el mismo cuadrado
+   (260 px) que en los demás juegos. Solo afecta a Frases (clase puesta por juego.js).
+   Si una imagen se recorta demasiado, cambia "cover" por "contain".
+   ============================================================ */
+.carrusel-frases .tarjeta-actual img {
+  width: 50vw; max-width: 260px;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  max-height: 38vh;
+  object-fit: cover;
+}
+

@@ -9,23 +9,23 @@
    ============================================================ */
 
 const CANCION_FACIL = [
-  { id: 1, text: "If you're happy and you know it, clap your hands. (Clap-clap)", audio: "audio/if-youre-happy/linea1.mp3" },
-  { id: 2, text: "If you're happy and you know it, clap your hands. (Clap-clap)", audio: "audio/if-youre-happy/linea2.mp3" },
-  { id: 3, text: "If you're happy and you know it, then your face will surely show it.", audio: "audio/if-youre-happy/linea3.mp3" },
-  { id: 4, text: "If you're happy and you know it, clap your hands. (Clap-clap)", audio: "audio/if-youre-happy/linea4.mp3" }
+  { id: 1, text: "If you're happy and you know it, clap your hands. (Clap-clap)", audio: "musica/audio/if-youre-happy/linea1.mp3" },
+  { id: 2, text: "If you're happy and you know it, clap your hands. (Clap-clap)", audio: "musica/audio/if-youre-happy/linea2.mp3" },
+  { id: 3, text: "If you're happy and you know it, then your face will surely show it.", audio: "musica/audio/if-youre-happy/linea3.mp3" },
+  { id: 4, text: "If you're happy and you know it, clap your hands. (Clap-clap)", audio: "musica/audio/if-youre-happy/linea4.mp3" }
 ];
 
 const CANCION_MEDIA = [
-  { id: 1, text: "I used to rule the world\nSeas would rise when I gave the Word", audio: "audio/viva-la-vida/linea1.mp3" },
-  { id: 2, text: "Now in the morning, I sleep alone\nSweep the streets I used to own", audio: "audio/viva-la-vida/linea2.mp3" },
-  { id: 3, text: "I used to roll the dice\nFeel the fear in my enemies' eyes", audio: "audio/viva-la-vida/linea3.mp3" },
-  { id: 4, text: 'Listen as the crowd would sing\n"Now the old king is dead, long live the king"', audio: "audio/viva-la-vida/linea4.mp3" },
-  { id: 5, text: "One minute, I held the key\nNext, the walls were closed on me", audio: "audio/viva-la-vida/linea5.mp3" },
-  { id: 6, text: "And I discovered that my castles stand\nUpon pillars of salt and pillars of sand", audio: "audio/viva-la-vida/linea6.mp3" },
-  { id: 7, text: "I hear Jerusalem bells a-ringin'\nRoman cavalry choirs are singin'", audio: "audio/viva-la-vida/linea7.mp3" },
-  { id: 8, text: "Be my mirror, my sword and shield\nMy missionaries in a foreign field", audio: "audio/viva-la-vida/linea8.mp3" },
-  { id: 9, text: "For some reason I can't explain\nOnce you'd gone, there was never", audio: "audio/viva-la-vida/linea9.mp3" },
-  { id: 10, text: "Never an honest word\nAnd that was when I ruled the world", audio: "audio/viva-la-vida/linea10.mp3" }
+  { id: 1, text: "I used to rule the world\nSeas would rise when I gave the Word", audio: "musica/audio/viva-la-vida/linea1.mp3" },
+  { id: 2, text: "Now in the morning, I sleep alone\nSweep the streets I used to own", audio: "musica/audio/viva-la-vida/linea2.mp3" },
+  { id: 3, text: "I used to roll the dice\nFeel the fear in my enemies' eyes", audio: "musica/audio/viva-la-vida/linea3.mp3" },
+  { id: 4, text: 'Listen as the crowd would sing\n"Now the old king is dead, long live the king"', audio: "musica/audio/viva-la-vida/linea4.mp3" },
+  { id: 5, text: "One minute, I held the key\nNext, the walls were closed on me", audio: "musica/audio/viva-la-vida/linea5.mp3" },
+  { id: 6, text: "And I discovered that my castles stand\nUpon pillars of salt and pillars of sand", audio: "musica/audio/viva-la-vida/linea6.mp3" },
+  { id: 7, text: "I hear Jerusalem bells a-ringin'\nRoman cavalry choirs are singin'", audio: "musica/audio/viva-la-vida/linea7.mp3" },
+  { id: 8, text: "Be my mirror, my sword and shield\nMy missionaries in a foreign field", audio: "musica/audio/viva-la-vida/linea8.mp3" },
+  { id: 9, text: "For some reason I can't explain\nOnce you'd gone, there was never", audio: "musica/audio/viva-la-vida/linea9.mp3" },
+  { id: 10, text: "Never an honest word\nAnd that was when I ruled the world", audio: "musica/audio/viva-la-vida/linea10.mp3" }
 ];
 
 const CATALOGO_CANCIONES = [

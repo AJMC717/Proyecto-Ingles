@@ -1,0 +1,34 @@
+/* oraciones.css: Build sentences */
+/* ============================================================
+   BUILD SENTENCES: pantalla de categoría y dificultad, y paso de hablar
+   ============================================================ */
+#pantallaNivelOraciones {
+  width: 100%;
+  max-width: 560px;
+  text-align: center;
+}
+
+.boton-nivel-oraciones {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: none;
+  border-radius: 16px;
+  padding: 16px;
+  background: white;
+  color: #1B1035;
+  text-align: left;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.boton-nivel-oraciones:hover {
+  background: #E8F5E9;
+}
+
+/* Oración ya armada: se esconden las fichas y el botón Check para dar lugar al micrófono */
+.constructor-oracion.hablando .banco-fichas,
+.constructor-oracion.hablando .btn-comprobar {
+  display: none;
+}
+

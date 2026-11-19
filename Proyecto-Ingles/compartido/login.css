@@ -1,0 +1,121 @@
+/* login.css: pantalla de inicio de sesión (usuarios.js) */
+    /* ===== ESTILOS DEL LOGIN ===== */
+  #login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    gap: 30px;
+    padding: 20px;
+  }
+
+  .tarjeta-login {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+  }
+
+  .titulo-login {
+    color: #58CC02;
+    font-size: 32px;
+    margin-bottom: 5px;
+    font-family: 'Arial', sans-serif;
+  }
+
+  .subtitulo {
+    color: #777;
+    margin-bottom: 25px;
+    font-size: 14px;
+  }
+
+  .tarjeta-login input {
+    width: 100%;
+    padding: 15px;
+    margin: 8px 0;
+    border: 2px solid #E5E5E5;
+    border-radius: 12px;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: border 0.3s;
+  }
+
+  .tarjeta-login input:focus {
+    outline: none;
+    border-color: #58CC02;
+  }
+
+  .btn-entrar {
+    width: 100%;
+    padding: 15px;
+    margin-top: 15px;
+    background: #58CC02;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 0 4px 0 #46a302;
+    transition: transform 0.1s;
+  }
+
+  .btn-entrar:hover {
+    background: #61e002;
+  }
+
+  .btn-entrar:active {
+    transform: translateY(4px);
+    box-shadow: none;
+  }
+
+  .btn-registro {
+    width: 100%;
+    padding: 15px;
+    margin-top: 10px;
+    background: white;
+    color: #58CC02;
+    border: 2px solid #58CC02;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+
+  .btn-registro:hover {
+    background: #f0f9e8;
+  }
+
+  .decoracion-izquierda,
+  .decoracion-derecha {
+    font-size: 50px;
+    opacity: 0.6;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    animation: flotar 3s ease-in-out infinite;
+  }
+
+  .decoracion-derecha {
+    animation-delay: 1.5s;
+  }
+
+  @keyframes flotar {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+  }
+
+  /* Ocultar decoraciones en pantallas pequeñas */
+  @media (max-width: 768px) {
+    .decoracion-izquierda,
+    .decoracion-derecha {
+      display: none;
+    }
+  }
+
+
