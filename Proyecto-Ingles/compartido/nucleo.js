@@ -201,8 +201,10 @@ function resaltarDificultadMenu(nivel, btn) {
     document.getElementById("chipPuntos").textContent = "⭐ " + puntos + " points";
     document.getElementById("chipRacha").textContent = "🔥 Streak: " + racha;
 
-    // Cartelito con el nivel y la categoría (solo en Flash Cards)
-    document.getElementById("chipNivel").textContent = nombreNivelFlash() + " · " + nombreCategoriaFlash();
+    // Cartelito con el nivel y la categoría (solo en Flash Cards; en Preguntas se omite)
+    if (modoActual !== "preguntas") {
+      document.getElementById("chipNivel").textContent = nombreNivelFlash() + " · " + nombreCategoriaFlash();
+    }
 
     mensaje.textContent = "";
     respondiendo = false;
@@ -508,15 +510,18 @@ function resaltarDificultadMenu(nivel, btn) {
   document.querySelectorAll(".tarjeta-modo").forEach(function (tarjeta) {
     tarjeta.addEventListener("click", function () {
       const modo = tarjeta.dataset.modo;
-      // La tarjeta "Write, Listen and Speak" del menú principal solo abre el submenú
+      
       if (modo === "submenu-verbos") { mostrarMenuVerbos(); return; }
-      // Los modos de Flash Cards pasan primero por la pantalla de nivel
       if (MODOS_VERBOS.includes(modo)) { abrirPantallaNivel(modo); return; }
-      // Build sentences: primero se elige la categoría y la dificultad
       if (modo === "oraciones") { abrirPantallaNivelOraciones(); return; }
-      // Frases: primero se elige la categoría y el nivel
       if (modo === "submenu-frases") { abrirPantallaFrases(); return; }
-      // "Escucha, canta y habla" tiene su propio módulo (musica.js)
+      
+      // === NUEVO: Si es preguntas, abrir SU propia pantalla de dificultad ===
+      if (modo === "preguntas") { 
+        abrirPantallaNivelPreguntas(); 
+        return; 
+      }
+      
       if (modo === "musica") {
         if (typeof abrirSeccionMusica === "function") abrirSeccionMusica();
         return;
