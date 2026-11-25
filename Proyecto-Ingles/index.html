@@ -74,6 +74,12 @@
   <div id="pantallaMenu">
     <h1>🗂️ How do you want to practice today?</h1>
 
+    <div class="selector-dificultad" style="display: flex; justify-content: center; gap: 12px; margin: 15px 0 25px 0; width: 100%;">
+      <button class="btn-dif" data-dificultad="facil" onclick="seleccionarDificultad('facil', this)" style="padding: 10px 20px; border-radius: 12px; border: 2px solid #E5E5E5; background: white; cursor: pointer; font-weight: bold; font-size: 15px;">🟢 Easy</button>
+      <button class="btn-dif" data-dificultad="medio" onclick="seleccionarDificultad('medio', this)" style="padding: 10px 20px; border-radius: 12px; border: 2px solid #E5E5E5; background: white; cursor: pointer; font-weight: bold; font-size: 15px;">🟡 Medium</button>
+      <button class="btn-dif" data-dificultad="dificil" onclick="seleccionarDificultad('dificil', this)" style="padding: 10px 20px; border-radius: 12px; border: 2px solid #E5E5E5; background: white; cursor: pointer; font-weight: bold; font-size: 15px;">🔴 Hard</button>
+    </div>
+
     <div class="menu-modos">
 
       <button class="tarjeta-modo" data-modo="submenu-verbos">
@@ -228,30 +234,6 @@
       <button class="boton-nivel-frases" data-nivel="dificil">
         <span class="nivel-emoji">🔴</span>
         <span><b>Hard</b><br>Long phrases (7 words or more).</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- ============================================================
-       QUESTIONS & ANSWERS: pantalla para elegir la dificultad
-      ============================================================ -->
-  <div id="pantallaNivelPreguntas" class="oculto">
-    <button class="btn-menu" id="btnVolverNivelPreguntas">⬅ Back to menu</button>
-    <h1>❓ Questions &amp; Answers</h1>
-
-    <p class="texto-ayuda">Choose your difficulty level:</p>
-    <div class="lista-niveles">
-      <button class="boton-nivel" data-dificultad="facil">
-        <span class="nivel-emoji">🟢</span>
-        <span><b>Easy</b><br>Multiple choice with images.</span>
-      </button>
-      <button class="boton-nivel" data-dificultad="medio">
-        <span class="nivel-emoji">🟡</span>
-        <span><b>Medium</b><br>Write the answer in English.</span>
-      </button>
-      <button class="boton-nivel" data-dificultad="dificil">
-        <span class="nivel-emoji">🔴</span>
-        <span><b>Hard</b><br>Translate from Spanish to English.</span>
       </button>
     </div>
   </div>

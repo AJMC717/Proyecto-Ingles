@@ -192,11 +192,11 @@
         pregunta.imgSutil = false;
         if (esTipoA) {
           const consignaFn = bancoTipoA[indiceBanco];
-          pregunta.consigna = consignaFn(pronombre, verbo); // <-- Texto limpio
+          pregunta.consigna = consignaFn(pronombre, verbo) + " (write the verb)";
           pregunta.respuestaCorrecta = verbo.nombre;
         } else {
           const datosB = bancoTipoB[indiceBanco](pronombre, verbo);
-          pregunta.consigna = datosB.consigna; // <-- Texto limpio
+          pregunta.consigna = datosB.consigna + " (write the answer)";
           pregunta.respuestaCorrecta = datosB.respuesta;
         }
       }
@@ -288,30 +288,3 @@
     // Mezclar el resultado final
     return mezclar(opciones);
   }
-  // ============================================================
-  // PANTALLA DE SELECCIÓN DE DIFICULTAD PARA QUESTIONS & ANSWERS
-  // ============================================================
-
-  function abrirPantallaNivelPreguntas() {
-    document.getElementById("pantallaMenu").classList.add("oculto");
-    document.getElementById("pantallaNivelPreguntas").classList.remove("oculto");
-    document.getElementById("app").classList.add("oculto");
-  }
-
-  // Botón para volver al menú desde la pantalla de dificultad de Q&A
-  const btnVolverNivelPreguntas = document.getElementById("btnVolverNivelPreguntas");
-  if (btnVolverNivelPreguntas) {
-    btnVolverNivelPreguntas.addEventListener("click", function () {
-      document.getElementById("pantallaNivelPreguntas").classList.add("oculto");
-      mostrarMenuPrincipal(); // Función de nucleo.js
-    });
-  }
-
-  // Al tocar un nivel, se guarda la dificultad y se inicia el juego
-  document.querySelectorAll("#pantallaNivelPreguntas .boton-nivel").forEach(function (boton) {
-    boton.addEventListener("click", function () {
-      dificultadActual = boton.dataset.dificultad; 
-      document.getElementById("pantallaNivelPreguntas").classList.add("oculto");
-      iniciarModo("preguntas"); // Función de nucleo.js
-    });
-  });
