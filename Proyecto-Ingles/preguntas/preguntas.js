@@ -158,8 +158,7 @@
     ];
     for (let i = 0; i < totalPreguntas; i++) {
       const verbo = verbosMezclados[i % verbosMezclados.length];
-      const pronombre = pronombrePorVerbo[verbo.nombre] || "She";
-      const esTipoA = i % 2 === 0;
+      const pronombre = (typeof pronombrePorVerbo !== 'undefined' && pronombrePorVerbo[verbo.nombre]) ? pronombrePorVerbo[verbo.nombre] : "She";      const esTipoA = i % 2 === 0;
       
       // Índice para el banco (0-7) basado en la mitad del índice
       const indiceBanco = Math.floor(i / 2) % 8;
@@ -186,17 +185,17 @@
           pregunta.opciones = armarOpcionesQA(datosB.respuesta, [datosB.respuesta, ...datosB.distractores]);
         }
       }
-      // ============ NIVEL MEDIO: Escribir en inglés ============
+            // ============ NIVEL MEDIO: Escribir en inglés ============
       else if (dificultadActual === "medio") {
         pregunta.tipoRespuesta = "escribir";
         pregunta.imgSutil = false;
         if (esTipoA) {
           const consignaFn = bancoTipoA[indiceBanco];
-          pregunta.consigna = consignaFn(pronombre, verbo) + " (write the verb)";
+          pregunta.consigna = consignaFn(pronombre, verbo); // <-- Ya no tiene el texto extra
           pregunta.respuestaCorrecta = verbo.nombre;
         } else {
           const datosB = bancoTipoB[indiceBanco](pronombre, verbo);
-          pregunta.consigna = datosB.consigna + " (write the answer)";
+          pregunta.consigna = datosB.consigna; // <-- Ya no tiene el texto extra
           pregunta.respuestaCorrecta = datosB.respuesta;
         }
       }
@@ -288,3 +287,24 @@
     // Mezclar el resultado final
     return mezclar(opciones);
   }
+  // ============================================================
+  // PANTALLA DE DIFICULTAD DE QUESTIONS & ANSWERS
+  // ============================================================
+  function abrirPantallaNivelPreguntas() {
+    document.getElementById("pantallaMenu").classList.add("oculto");
+    document.getElementById("pantallaNivelPreguntas").classList.remove("oculto");
+    document.getElementById("app").classList.add("oculto");
+  }
+
+  document.getElementById("btnVolverNivelPreguntas").addEventListener("click", function () {
+    document.getElementById("pantallaNivelPreguntas").classList.add("oculto");
+    mostrarMenuPrincipal();
+  });
+
+  document.querySelectorAll("#pantallaNivelPreguntas .boton-nivel").forEach(function (boton) {
+    boton.addEventListener("click", function () {
+      dificultadActual = boton.dataset.dificultad;
+      document.getElementById("pantallaNivelPreguntas").classList.add("oculto");
+      iniciarModo("preguntas");
+    });
+  });

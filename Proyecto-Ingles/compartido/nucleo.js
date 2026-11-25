@@ -202,8 +202,11 @@ function resaltarDificultadMenu(nivel, btn) {
     document.getElementById("chipRacha").textContent = "🔥 Streak: " + racha;
 
     // Cartelito con el nivel y la categoría (solo en Flash Cards)
-    document.getElementById("chipNivel").textContent = nombreNivelFlash() + " · " + nombreCategoriaFlash();
-
+    try {
+      document.getElementById("chipNivel").textContent = nombreNivelFlash() + " · " + nombreCategoriaFlash();
+    } catch (error) {
+      console.log("Escudo activado: error de flashcards ignorado");
+    }
     mensaje.textContent = "";
     respondiendo = false;
     intentos = 0;
@@ -517,6 +520,7 @@ function resaltarDificultadMenu(nivel, btn) {
       // Frases: primero se elige la categoría y el nivel
       if (modo === "submenu-frases") { abrirPantallaFrases(); return; }
       // "Escucha, canta y habla" tiene su propio módulo (musica.js)
+      if (modo === "preguntas") { abrirPantallaNivelPreguntas(); return; }
       if (modo === "musica") {
         if (typeof abrirSeccionMusica === "function") abrirSeccionMusica();
         return;
