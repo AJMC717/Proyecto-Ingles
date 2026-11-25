@@ -193,9 +193,7 @@
   }
 
   function nombreNivelFlash() {
-    const nivel = NIVELES[nivelFlash];
-    if (!nivel) return "";
-    return nivel.emoji + " " + nivel.nombre;
+    return NIVELES[nivelFlash].emoji + " " + NIVELES[nivelFlash].nombre;
   }
 
   function nombreCategoriaFlash() {
