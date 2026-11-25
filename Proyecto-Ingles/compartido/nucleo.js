@@ -97,6 +97,11 @@ function resaltarDificultadMenu(nivel, btn) {
   }
 
   function iniciarModoNormal(modo) {
+    // Si modo es null o undefined, no hacer nada
+    if (!modo) {
+      console.warn('⚠️ iniciarModoNormal llamado con modo nulo, ignorando');
+      return;
+    }
     modoActual = modo;
     mejorRacha = leerMejorRacha(modo);
     puntos = 0;

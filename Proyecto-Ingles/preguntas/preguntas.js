@@ -40,6 +40,12 @@
 
   function generarPreguntasDePreguntas() {
     const lista = [];
+    // DIAGNÓSTICO: ver qué pasa la primera vez
+    console.log('🔍 [DIAG] dificultadActual:', dificultadActual);
+    console.log('🔍 [DIAG] verbos definido:', typeof verbos !== 'undefined');
+    console.log('🔍 [DIAG] verbos length:', verbos ? verbos.length : 'NO DEFINIDO');
+    console.log('🔍 [DIAG] pronombrePorVerbo definido:', typeof pronombrePorVerbo !== 'undefined');
+    
     const verbosMezclados = mezclar(verbos);
     const totalPreguntas = 16;
 
@@ -215,6 +221,8 @@
       }
       lista.push(pregunta);
     }
+    console.log('🔍 [DIAG] lista antes de retornar:', lista.length);
+    console.log('🔍 [DIAG] dificultadActual al final:', dificultadActual);
     return mezclar(lista);
   }
 
